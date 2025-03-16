@@ -1,0 +1,61 @@
+{
+  "welcome": "Loan Advisor",
+  "eligibility": "Loan Eligibility",
+  "application": "Apply for Loan",
+  "financialTips": "Financial Tips",
+  "heroTitle": "Your Smart Financial Guide",
+  "heroSubtitle": "Get personalized loan advice, check your eligibility, and learn about financial management - all in one place.",
+  "getStarted": "Check Eligibility",
+  "learnMore": "Learn More",
+  "ourFeatures": "Why Choose Us",
+  "featureTitle1": "Smart Eligibility Check",
+  "featureDesc1": "Get instant assessment of your loan eligibility with our AI-powered system",
+  "featureTitle2": "Financial Growth",
+  "featureDesc2": "Receive personalized recommendations to improve your financial health",
+  "featureTitle3": "Secure Process",
+  "featureDesc3": "Your data is protected with bank-grade security measures",
+  "featureTitle4": "24/7 Support",
+  "featureDesc4": "Get assistance anytime with our multilingual AI chatbot",
+  "chatTitle": "Ask Me Anything",
+  "chatPlaceholder": "Type your question here...",
+  "send": "Send",
+  "loading": "Loading...",
+  "error": "Something went wrong. Please try again.",
+  "eligibilityCheck": {
+    "title": "Check Your Loan Eligibility",
+    "income": "Monthly Income",
+    "expenses": "Monthly Expenses",
+    "creditScore": "Credit Score",
+    "loanAmount": "Desired Loan Amount",
+    "loanTerm": "Loan Term (Years)",
+    "calculate": "Calculate Eligibility",
+    "result": {
+      "eligible": "Congratulations! You are eligible for the loan.",
+      "notEligible": "We're sorry, you are not eligible for the loan at this time.",
+      "suggestion": "Here are some suggestions to improve your eligibility:"
+    }
+  },
+  "application": {
+    "title": "Loan Application",
+    "personalInfo": "Personal Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "address": "Address",
+    "employment": "Employment Details",
+    "employer": "Employer Name",
+    "occupation": "Occupation",
+    "workExperience": "Work Experience (Years)",
+    "submit": "Submit Application",
+    "success": "Application submitted successfully!",
+    "error": "Error submitting application. Please try again."
+  },
+  "financialTips": {
+    "title": "Financial Management Tips",
+    "budgeting": "Budgeting",
+    "saving": "Saving",
+    "investing": "Investing",
+    "creditScore": "Credit Score"
+  }
+} 
