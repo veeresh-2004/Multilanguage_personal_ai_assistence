@@ -11,7 +11,8 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f8f9fa;
+  color:black;
+  background-color: #687887;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
@@ -22,7 +23,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #2196f3;
+  color: #030e17;
   font-size: 28px;
   margin-bottom: 30px;
   padding-bottom: 10px;
@@ -112,7 +113,7 @@
 }
 
 .button-container button:hover {
-  background-color: #1976d2;
+  background-color: #030b14;
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(33, 150, 243, 0.4);
 }

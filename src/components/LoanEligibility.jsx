@@ -16,6 +16,7 @@ import {
   Timeline as TimelineIcon,
   ArrowForward as ArrowIcon,
   NavigateNext as NextIcon,
+  CreditScore,
 } from '@mui/icons-material';
 
 // MUI Components
@@ -74,7 +75,7 @@ const LoanEligibility = () => {
         const diff = Math.random() * 10;
         return Math.min(oldProgress + diff, 100);
       });
-    }, 500);
+    }, 100);
 
     return () => {
       clearInterval(timer);
@@ -102,7 +103,8 @@ const LoanEligibility = () => {
       title: 'Credit Score',
       description: 'Good credit history and score',
       requirements: ['Credit score above 700', 'No defaults', 'Clean credit history'],
-      color: '#f44336'
+      color: '#f44336',
+      Element:<CreditScore/>
     },
     {
       icon: <MoneyIcon sx={{ fontSize: '3rem' }} />,
@@ -498,23 +500,23 @@ const LoanEligibility = () => {
         <div className="form-container">
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             <h2 className="form-title">
-              {t('title')}
+              {t('WELCOME TO APPLICATION')}
               <TextToSpeech text={t('title')} />
             </h2>
-            <Button
+            <Button 
               variant="outlined"
               onClick={() => setShowForm(false)}
               sx={{
                 borderRadius: 2,
               }}
             >
-              Back to Criteria
+              Back to Menu
             </Button>
           </Box>
           
           <form onSubmit={handleSubmit} className="loan-form">
             <div className="form-section">
-              <h3>{t('personalDetails')}</h3>
+              <h3>{t('PERSONAL_DETAILS')}</h3>
               <div className="form-grid">
                 <div className="form-group">
                   <label>{t('name')}</label>
@@ -535,7 +537,7 @@ const LoanEligibility = () => {
                 <div className="form-group">
                   <label>{t('sex')}</label>
                   <select name="sex" required onChange={handleChange} value={formData.sex}>
-                    <option value="">{t('common.select')}</option>
+                    <option value="">{t('Please Select Your Gender')}</option>
                     <option value="Male">{t('male')}</option>
                     <option value="Female">{t('female')}</option>
                     <option value="Other">{t('other')}</option>
@@ -545,7 +547,7 @@ const LoanEligibility = () => {
             </div>
             
             <div className="form-section">
-              <h3>{t('identityDetails')}</h3>
+              <h3>{t('IDENTITYDETAILS')}</h3>
               <div className="form-grid">
                 <div className="form-group">
                   <label>{t('pan')}</label>
@@ -575,7 +577,7 @@ const LoanEligibility = () => {
             </div>
             
             <div className="form-section">
-              <h3>{t('financialDetails')}</h3>
+              <h3>{t('FINANCIALDETAILS')}</h3>
               <div className="form-grid">
                 <div className="form-group">
                   <label>{t('occupation')}</label>
@@ -584,7 +586,7 @@ const LoanEligibility = () => {
                 <div className="form-group">
                   <label>{t('employmentType')}</label>
                   <select name="employmentType" required onChange={handleChange} value={formData.employmentType}>
-                    <option value="">{t('common.select')}</option>
+                    <option value="">{t('Select-type')}</option>
                     <option value="Salaried">{t('salaried')}</option>
                     <option value="Self-Employed">{t('selfEmployed')}</option>
                     <option value="Business Owner">{t('businessOwner')}</option>
@@ -593,7 +595,7 @@ const LoanEligibility = () => {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>{t('employmentDuration')}</label>
+                  <label>{t('EMPLOYMENT_DURATION')}</label>
                   <input 
                     type="number" 
                     name="employmentDuration" 
@@ -625,7 +627,7 @@ const LoanEligibility = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t('creditScore')}</label>
+                  <label>{t('CREDIT_SCORE')}</label>
                   <input 
                     type="number" 
                     name="creditScore" 
@@ -635,17 +637,18 @@ const LoanEligibility = () => {
                     onChange={handleChange} 
                     value={formData.creditScore} 
                   />
+                  
                 </div>
               </div>
             </div>
             
             <div className="form-section">
-              <h3>{t('loanDetails')}</h3>
+              <h3>{t('LAONDETAILS')}</h3>
               <div className="form-grid">
                 <div className="form-group">
                   <label>{t('loanType')}</label>
                   <select name="loanType" required onChange={handleChange} value={formData.loanType}>
-                    <option value="">{t('common.select')}</option>
+                    <option value="">{t('Type-of-loan')}</option>
                     <option value="Education Loan">{t('education')}</option>
                     <option value="Home Loan">{t('home')}</option>
                     <option value="Personal Loan">{t('personal')}</option>
@@ -653,7 +656,7 @@ const LoanEligibility = () => {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>{t('loanAmount')}</label>
+                  <label>{t('Loan Amount')}</label>
                   <input 
                     type="number" 
                     name="loanAmount" 
@@ -665,7 +668,7 @@ const LoanEligibility = () => {
                 <div className="form-group">
                   <label>{t('loanTenure')}</label>
                   <select name="loanTenure" onChange={handleChange} value={formData.loanTenure}>
-                    <option value="">{t('common.select')}</option>
+                    <option value="">{t('select')}</option>
                     <option value="1">1 {t('year')}</option>
                     <option value="2">2 {t('years')}</option>
                     <option value="3">3 {t('years')}</option>

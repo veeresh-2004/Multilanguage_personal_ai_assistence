@@ -8,7 +8,6 @@ import Signup from './components/Signup';
 import LoanEligibility from './components/LoanEligibility';
 import LoanApplicationGuide from './components/LoanApplicationGuide';
 import FinancialTips from './components/FinancialTips';
-import ChatBot from './components/ChatBot';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n/config';
 import { LanguageProvider } from './context/LanguageContext';
@@ -171,7 +170,6 @@ function App() {
                       </Routes>
                     </Container>
                   </Box>
-                  <ChatBot />
                 </Box>
               </Router>
             </ThemeProvider>
