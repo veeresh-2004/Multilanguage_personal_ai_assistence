@@ -1,207 +1,152 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  Box,
   Container,
-  Paper,
-  Typography,
+  Box,
   TextField,
   Button,
+  Typography,
   Divider,
-  IconButton,
-  InputAdornment,
-  Link as MuiLink,
+  Paper,
   Alert,
-} from '@mui/material';
-import {
-  Visibility,
-  VisibilityOff,
-  Google as GoogleIcon,
-} from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+} from "@mui/material";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 const Signup = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [error, setError] = useState("");
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
     try {
-      // Here you would typically make an API call to your backend
-      // For now, we'll simulate a successful registration
-      const userData = {
-        name: formData.name,
-        email: formData.email,
-      };
-      login(userData);
-      navigate('/');
-    } catch (error) {
-      setError('Failed to create account');
+      // Dummy signup — replace with API call later
+      login(formData);
+      navigate("/");
+    } catch {
+      setError("Signup failed. Please try again.");
     }
   };
 
-  const handleGoogleSignup = async () => {
+  // ✅ Google Signup Success
+  const handleGoogleSuccess = (credentialResponse) => {
     try {
-      // Here you would implement Google OAuth
-      // For now, we'll simulate a successful Google signup
+      const decoded = jwtDecode(credentialResponse.credential);
       const userData = {
-        email: 'user@gmail.com',
-        name: 'Google User',
+        email: decoded.email,
+        name: decoded.name,
+        picture: decoded.picture,
       };
       login(userData);
-      navigate('/');
-    } catch (error) {
-      setError('Google signup failed');
+      navigate("/");
+    } catch {
+      setError("Google signup failed.");
     }
+  };
+
+  // ❌ Google Signup Error
+  const handleGoogleError = () => {
+    setError("Google signup was unsuccessful. Try again.");
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="xs">
       <Box
         sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          py: 4,
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          py: 2,
         }}
       >
         <Paper
           elevation={3}
-          sx={{
-            p: 4,
-            width: '100%',
-            borderRadius: 2,
-          }}
+          sx={{ p: 3, width: "100%", borderRadius: 5, maxWidth: 400 }}
         >
-          <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
-            Create Account
+          <Typography variant="h5" align="center" gutterBottom fontWeight="bold">
+            Create Your Account
           </Typography>
-          <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 4 }}>
-            Sign up to get started with our services
+          <Typography
+            variant="body2"
+            align="center"
+            color="text.secondary"
+            sx={{ mb: 3 }}
+          >
+            Join FinMate today
           </Typography>
 
           {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
+            <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
 
+          {/* Local Signup Form */}
           <form onSubmit={handleSubmit}>
             <TextField
-              fullWidth
               label="Full Name"
               name="name"
+              type="text"
+              fullWidth
+              margin="normal"
               value={formData.name}
               onChange={handleChange}
-              margin="normal"
               required
-              sx={{ mb: 2 }}
+              size="small"
             />
-
             <TextField
-              fullWidth
-              label="Email Address"
+              label="Email"
               name="email"
               type="email"
+              fullWidth
+              margin="normal"
               value={formData.email}
               onChange={handleChange}
-              margin="normal"
               required
-              sx={{ mb: 2 }}
+              size="small"
             />
-
             <TextField
-              fullWidth
               label="Password"
               name="password"
-              type={showPassword ? 'text' : 'password'}
+              type="password"
+              fullWidth
+              margin="normal"
               value={formData.password}
               onChange={handleChange}
-              margin="normal"
               required
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              fullWidth
-              label="Confirm Password"
-              name="confirmPassword"
-              type={showPassword ? 'text' : 'password'}
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              margin="normal"
-              required
-              sx={{ mb: 3 }}
+              size="small"
             />
 
             <Button
-              fullWidth
               type="submit"
               variant="contained"
-              size="large"
-              sx={{ mb: 2 }}
+              fullWidth
+              sx={{ mt: 2, mb: 1 }}
             >
               Sign Up
             </Button>
           </form>
 
-          <Box sx={{ my: 2 }}>
-            <Divider>
-              <Typography variant="body2" color="text.secondary">
-                OR
-              </Typography>
-            </Divider>
-          </Box>
+          {/* Divider */}
+          <Divider sx={{ my: 2 }}>OR</Divider>
 
-          <Button
-            fullWidth
-            variant="outlined"
-            size="large"
-            startIcon={<GoogleIcon />}
-            onClick={handleGoogleSignup}
-            sx={{ mb: 2 }}
-          >
-            Sign up with Google
-          </Button>
+          {/* ✅ Google Signup */}
+          <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
 
-          <Box sx={{ textAlign: 'center', mt: 2 }}>
+          <Box sx={{ textAlign: "center", mt: 2 }}>
             <Typography variant="body2" color="text.secondary">
-              Already have an account?{' '}
-              <MuiLink component={Link} to="/login" color="primary">
-                Sign in
-              </MuiLink>
+              Already have an account?{" "}
+              <Link to="/login" style={{ color: "#1976d2", textDecoration: "none" }}>
+                Log in
+              </Link>
             </Typography>
           </Box>
         </Paper>
@@ -210,4 +155,4 @@ const Signup = () => {
   );
 };
 
-export default Signup; 
+export default Signup;

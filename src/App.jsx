@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, Box, Container } from '@mui/material';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
@@ -8,11 +8,9 @@ import Signup from './components/Signup';
 import LoanEligibility from './components/LoanEligibility';
 import LoanApplicationGuide from './components/LoanApplicationGuide';
 import FinancialTips from './components/FinancialTips';
-import { I18nextProvider } from 'react-i18next';
-import i18n from './i18n/config';
-import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
+import ForgotPassword from "./components/login/ForgotPassword";
 
 
 const theme = createTheme({
@@ -85,96 +83,110 @@ const theme = createTheme({
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
-  
   if (!isAuthenticated) {
-    // Instead of redirecting, we'll show the component with restricted functionality
     return children;
   }
-  
   return children;
 };
 
-function App() {
-  console.log('App rendering started');
+// Wrapper to use useLocation outside Router
+const AppContent = () => {
+  const location = useLocation();
+  const hideNavbarRoutes = ["/login", "/signup", "/forgot-password"];
+  const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const iframe = document.querySelector("iframe.skiptranslate");
+      if (iframe) {
+        iframe.style.display = "none";
+      }
+      const body = document.querySelector("body");
+      if (body) {
+        body.style.top = "0px";
+      }
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%)',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: `
+            radial-gradient(circle at 20% 30%, rgba(25, 118, 210, 0.05) 0%, transparent 25%),
+            radial-gradient(circle at 80% 70%, rgba(156, 39, 176, 0.05) 0%, transparent 25%)
+          `,
+          pointerEvents: 'none',
+        },
+      }}
+    >
+      {!shouldHideNavbar && <Navbar />}
+      <Box
+        component="main"
+        sx={{
+          pt: { xs: 8, sm: 10 },
+          pb: { xs: 4, sm: 6 },
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        <Container maxWidth="xl">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route
+              path="/loan-eligibility"
+              element={
+                <ProtectedRoute>
+                  <LoanEligibility />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/loan-application"
+              element={
+                <ProtectedRoute>
+                  <LoanApplicationGuide />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/financial-tips"
+              element={
+                <ProtectedRoute>
+                  <FinancialTips />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Container>
+      </Box>
+    </Box>
+  );
+};
+
+function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <I18nextProvider i18n={i18n}>
-          <LanguageProvider>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <Router>
-                <Box
-                  sx={{
-                    minHeight: '100vh',
-                    background: 'linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%)',
-                    position: 'relative',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background: `
-                        radial-gradient(circle at 20% 30%, rgba(25, 118, 210, 0.05) 0%, transparent 25%),
-                        radial-gradient(circle at 80% 70%, rgba(156, 39, 176, 0.05) 0%, transparent 25%)
-                      `,
-                      pointerEvents: 'none',
-                    },
-                  }}
-                >
-                  <Navbar />
-                  <Box
-                    component="main"
-                    sx={{
-                      pt: { xs: 8, sm: 10 },
-                      pb: { xs: 4, sm: 6 },
-                      position: 'relative',
-                      zIndex: 1,
-                    }}
-                  >
-                    <Container maxWidth="xl">
-                      <Routes>
-                        {/* Public routes */}
-                        <Route path="/" element={<Home />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/signup" element={<Signup />} />
-                        
-                        {/* Protected routes */}
-                        <Route
-                          path="/loan-eligibility"
-                          element={
-                            <ProtectedRoute>
-                              <LoanEligibility />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/loan-application"
-                          element={
-                            <ProtectedRoute>
-                              <LoanApplicationGuide />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/financial-tips"
-                          element={
-                            <ProtectedRoute>
-                              <FinancialTips />
-                            </ProtectedRoute>
-                          }
-                        />
-                      </Routes>
-                    </Container>
-                  </Box>
-                </Box>
-              </Router>
-            </ThemeProvider>
-          </LanguageProvider>
-        </I18nextProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Router>
+            <AppContent />
+          </Router>
+        </ThemeProvider>
       </AuthProvider>
     </ErrorBoundary>
   );

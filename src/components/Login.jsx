@@ -12,19 +12,17 @@ import {
   Link as MuiLink,
   Alert,
 } from '@mui/material';
-import {
-  Visibility,
-  VisibilityOff,
-  Google as GoogleIcon,
-} from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+// ✅ Google imports
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode";
+
+
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -40,11 +38,9 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Here you would typically make an API call to your backend
-      // For now, we'll simulate a successful login
       const userData = {
         email: formData.email,
-        name: 'User Name', // This would come from your backend
+        name: 'User Name',
       };
       login(userData);
       navigate('/');
@@ -53,53 +49,62 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      // Here you would implement Google OAuth
-      // For now, we'll simulate a successful Google login
-      const userData = {
-        email: 'user@gmail.com',
-        name: 'Google User',
-      };
-      login(userData);
-      navigate('/');
-    } catch (err) {
-      setError('Google login failed');
-    }
+  // ✅ Actual Google login handler
+const handleGoogleSuccess = (credentialResponse) => {
+  try {
+    const decoded = jwtDecode(credentialResponse.credential); // ✅ FIXED
+    const userData = {
+      email: decoded.email,
+      name: decoded.name,
+      picture: decoded.picture,
+    };
+    login(userData);
+    navigate('/');
+  } catch (err) {
+    setError('Google login failed');
+  }
+};
+
+
+  const handleGoogleFailure = () => {
+    setError('Google login was unsuccessful. Try again.');
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="xs">
       <Box
         sx={{
           minHeight: '100vh',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          py: 4,
+          py: 2,
         }}
       >
         <Paper
           elevation={3}
           sx={{
-            p: 4,
+            p: 3,
             width: '100%',
-            borderRadius: 2,
+            borderRadius: 5,
+            maxWidth: 400,
+            maxHeight: 600,
           }}
         >
-          <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
-            Welcome Back
+          <Typography variant="h5" align="center" gutterBottom fontWeight="bold">
+            Welcome Back FinMate
           </Typography>
-          <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 4 }}>
-            Sign in to continue to your account
+          <Typography variant="body2" align="center" color="text.secondary" sx={{ mb: 3 }}>
+            Sign in to continue
           </Typography>
 
           {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
+            <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
 
+          {/* Email & Password Form */}
           <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
@@ -110,7 +115,7 @@ const Login = () => {
               onChange={handleChange}
               margin="normal"
               required
-              sx={{ mb: 2 }}
+              size="small"
             />
 
             <TextField
@@ -122,50 +127,34 @@ const Login = () => {
               onChange={handleChange}
               margin="normal"
               required
+              size="small"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
+                      size="small"
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),
               }}
-              sx={{ mb: 2 }}
             />
 
-            <Button
-              fullWidth
-              type="submit"
-              variant="contained"
-              size="large"
-              sx={{ mb: 2 }}
-            >
+            <Button fullWidth type="submit" variant="contained" size="medium" sx={{ mt: 2, mb: 1 }}>
               Sign In
             </Button>
           </form>
 
-          <Box sx={{ my: 2 }}>
-            <Divider>
-              <Typography variant="body2" color="text.secondary">
-                OR
-              </Typography>
-            </Divider>
-          </Box>
+          <Divider sx={{ my: 2 }}>OR</Divider>
 
-          <Button
-            fullWidth
-            variant="outlined"
-            size="large"
-            startIcon={<GoogleIcon />}
-            onClick={handleGoogleLogin}
-            sx={{ mb: 2 }}
-          >
-            Continue with Google
-          </Button>
+          {/* ✅ Google Login Button */}
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleFailure}
+          />
 
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Typography variant="body2" color="text.secondary">
@@ -189,4 +178,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

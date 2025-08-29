@@ -1,3 +1,4 @@
+//this is used for the text to speech
 import React, { useState, useEffect } from 'react';
 import { IconButton, CircularProgress, Tooltip, Snackbar, Alert } from '@mui/material';
 import { VolumeUp as VolumeUpIcon, VolumeOff as VolumeOffIcon } from '@mui/icons-material';
