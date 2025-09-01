@@ -30,7 +30,7 @@ import {
   Logout as LogoutIcon,
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext'; // Import the updated useAuth context
 import LanguageSelector from './LanguageSelector';
 
 const Navbar = () => {
@@ -39,7 +39,7 @@ const Navbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuth(); // Get user from context
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -53,16 +53,11 @@ const Navbar = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleLogout = () => {
-    logout();
-    handleCloseUserMenu();
-    navigate('/login');
-  };
-
   const menuItems = [
     { text: 'Loan Eligibility', icon: <AssessmentIcon />, path: '/loan-eligibility' },
-    { text: 'Loan Application', icon: <DescriptionIcon />, path: '/loan-application' },
+    { text: 'Find Loan', icon: <DescriptionIcon />, path: '/loan-application' },
     { text: 'Financial Tips', icon: <TipsIcon />, path: '/financial-tips' },
+    { text: 'DashBoard', icon: <TipsIcon />, path: '/Dashboard' },
   ];
 
   const drawer = (
@@ -98,7 +93,6 @@ const Navbar = () => {
               <MenuIcon />
             </IconButton>
           )}
-
           <Typography
             variant="h6"
             noWrap
@@ -114,9 +108,8 @@ const Navbar = () => {
               flexGrow: { xs: 1, md: 0 },
             }}
           >
-            LOANADVISOR
+            LOANMATE
           </Typography>
-
           {!isMobile && (
             <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
               {menuItems.map((item) => (
@@ -132,15 +125,15 @@ const Navbar = () => {
               ))}
             </Box>
           )}
-
           <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', gap: 2 }}>
             <LanguageSelector />
-            
             {user ? (
               <>
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt={user.name} src="/static/images/avatar/2.jpg" />
+                    <Avatar alt={user?.fullName} src={user.avatar || "/static/images/avatar/2.jpg"}>
+                      {!user.avatar && user.fullName ? user.fullName.charAt(0) : 'U'}
+                    </Avatar>
                   </IconButton>
                 </Tooltip>
                 <Menu
@@ -159,11 +152,12 @@ const Navbar = () => {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  {/* Profile and Logout menu items */}
+                  <MenuItem component={RouterLink} to="/profile" onClick={handleCloseUserMenu}>
                     <AccountIcon sx={{ mr: 1 }} />
                     <Typography textAlign="center">Profile</Typography>
                   </MenuItem>
-                  <MenuItem onClick={handleLogout}>
+                  <MenuItem onClick={logout}>
                     <LogoutIcon sx={{ mr: 1 }} />
                     <Typography textAlign="center">Logout</Typography>
                   </MenuItem>
@@ -192,7 +186,6 @@ const Navbar = () => {
           </Box>
         </Toolbar>
       </Container>
-
       <Drawer
         variant="temporary"
         anchor="left"

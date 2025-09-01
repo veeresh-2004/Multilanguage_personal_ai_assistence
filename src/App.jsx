@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { ThemeProvider, createTheme, CssBaseline, Box, Container } from '@mui/material';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
-import Login from './components/Login';
+import Login from './components/Login';  // Update the import wherever you use it
 import Signup from './components/Signup';
 import LoanEligibility from './components/LoanEligibility';
 import LoanApplicationGuide from './components/LoanApplicationGuide';
@@ -11,6 +11,12 @@ import FinancialTips from './components/FinancialTips';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import ForgotPassword from "./components/login/ForgotPassword";
+import   Profile  from "./components/login/Profile";
+import Banklists from './components/dashboard/elements/Banklist';
+import  Dashboard  from './components/dashboard/DashBoard';
+import LoanEligibledata from './components/dashboard/elements/LoanEligibledata';
+import Getknowloans from './components/dashboard/elements/Getknowloans';
+import LoanReviews from './components/dashboard/elements/LoanReviews';
 
 
 const theme = createTheme({
@@ -146,6 +152,8 @@ const AppContent = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/profile" element={<Profile />  } />
+            <Route path="/banklists" element={<Banklists />  } />
             <Route
               path="/loan-eligibility"
               element={
@@ -170,6 +178,18 @@ const AppContent = () => {
                 </ProtectedRoute>
               }
             />
+             <Route
+              path="/Dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+             <Route path="/eligible-data" element={<LoanEligibledata />  } />
+             <Route path="/bank-list" element={<Banklists />  } />
+             <Route path="/Loan-info" element={<Getknowloans />  } />
+              <Route path="/loan-reviews" element={<LoanReviews />  } />
           </Routes>
         </Container>
       </Box>

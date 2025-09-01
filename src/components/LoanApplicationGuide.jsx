@@ -1,620 +1,433 @@
-import React, { useState } from 'react';
-import '../styles/navy-theme.css';
+import React, { useState, useEffect } from "react";
+import { CreditCard, DollarSign, User, Calendar, Home, Car, GraduationCap, Building } from "lucide-react";
 
-const LoanApplicationGuide = () => {
-  const [currentView, setCurrentView] = useState('guide'); // 'guide' or 'application'
-  const [activeStep, setActiveStep] = useState(0);
-  const [formData, setFormData] = useState({
-    // Personal Information
-    loanType: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
-    
-    // Employment Details
-    employmentStatus: '',
-    employerName: '',
-    jobTitle: '',
-    monthlyIncome: '',
-    yearsEmployed: '',
-    
-    // Loan Details
-    loanAmount: '',
-    loanPurpose: '',
-    loanTerm: '',
-    
-    // Documents
-    hasIdentityProof: false,
-    hasAddressProof: false,
-    hasIncomeProof: false,
-    
-    // Additional Information
-    existingLoans: '',
-    creditScore: '',
-    monthlyExpenses: ''
+const BankLoanFinderDynamicLimited = () => {
+  const [step, setStep] = useState(0);
+  const [banks, setBanks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [inputFocused, setInputFocused] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [answers, setAnswers] = useState({
+    creditScore: "",
+    income: "",
+    employmentType: "",
+    age: "",
+    loanType: "",
+    tenure: "",
   });
-  
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
-  
-  const handleStartApplication = () => {
-    setCurrentView('application');
-    window.scrollTo(0, 0);
-  };
-  
-  const handleNext = () => {
-    setActiveStep(prev => prev + 1);
-    window.scrollTo(0, 0);
-  };
-  
-  const handleBack = () => {
-    setActiveStep(prev => prev - 1);
-    window.scrollTo(0, 0);
-  };
-  
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitted(true);
-    }, 2000);
-  };
-  
-  const steps = [
-    {
-      title: "Personal Information",
-      description: "The first step requires your basic personal details.",
-      items: [
-        "Full name (as it appears on your ID)",
-        "Email address (that you check regularly)",
-        "Phone number for contact",
-        "Current residential address",
-        "Loan type selection"
-      ],
-      tip: "Make sure your contact information is accurate as all communications regarding your application will be sent to these contacts."
+  const [filteredBanks, setFilteredBanks] = useState([]);
+
+  useEffect(() => {
+    fetch(
+      "https://raw.githubusercontent.com/Veer212004/Loan-data/refs/heads/main/banklist.json"
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setBanks(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching bank data:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const questions = [
+    { 
+      label: "Enter your Credit Score", 
+      field: "creditScore", 
+      type: "input",
+      icon: <CreditCard className="w-6 h-6" />,
+      gradient: "from-blue-500 to-purple-600",
+      placeholder: "e.g., 750"
+    },
+    { 
+      label: "Enter your Monthly Income (₹)", 
+      field: "income", 
+      type: "input",
+      icon: <DollarSign className="w-6 h-6" />,
+      gradient: "from-green-500 to-teal-600",
+      placeholder: "e.g., 50000"
     },
     {
-      title: "Employment Details",
-      description: "Information about your current employment status and income.",
-      items: [
-        "Current employment status",
-        "Employer name and contact details",
-        "Job title and department",
-        "Monthly income before taxes",
-        "Length of employment in years"
-      ],
-      tip: "Higher income and longer employment duration typically improve your chances of loan approval."
+      label: "Select Employment Type",
+      field: "employmentType",
+      type: "select",
+      options: ["Salaried", "Self-employed"],
+      icon: <User className="w-6 h-6" />,
+      gradient: "from-orange-500 to-red-600"
+    },
+    { 
+      label: "Enter your Age", 
+      field: "age", 
+      type: "input",
+      icon: <Calendar className="w-6 h-6" />,
+      gradient: "from-purple-500 to-pink-600",
+      placeholder: "e.g., 30"
     },
     {
-      title: "Loan Details",
-      description: "Specifics about the loan you're requesting.",
-      items: [
-        "Loan amount needed",
-        "Purpose of the loan",
-        "Preferred repayment term"
-      ],
-      tip: "Be specific about your loan purpose. Vague purposes may delay your application process."
+      label: "Select Loan Type",
+      field: "loanType",
+      type: "select",
+      options: ["Personal Loan", "Home Loan", "Car Loan", "Education Loan", "Business Loan"],
+      icon: <Home className="w-6 h-6" />,
+      gradient: "from-indigo-500 to-blue-600"
     },
-    {
-      title: "Required Documents",
-      description: "Documents you'll need to have ready for verification.",
-      items: [
-        "Government-issued ID (passport/driver's license)",
-        "Proof of address (utility bill/bank statement)",
-        "Proof of income (pay stubs/tax returns)"
-      ],
-      tip: "Documents should be recent (usually within the last 3 months) and clearly legible."
+    { 
+      label: "Enter Desired Tenure (Months)", 
+      field: "tenure", 
+      type: "input",
+      icon: <Calendar className="w-6 h-6" />,
+      gradient: "from-teal-500 to-green-600",
+      placeholder: "e.g., 24"
     },
-    {
-      title: "Additional Information",
-      description: "Other financial details that affect your application.",
-      items: [
-        "Number of existing loans",
-        "Current credit score",
-        "Monthly expenses"
-      ],
-      tip: "Being honest about your existing financial obligations helps us provide you with a suitable loan offer."
-    }
   ];
-  
-  // Calculate the step completion percentage
-  const progressPercentage = ((activeStep + 1) / steps.length) * 100;
-  
-  const renderStepContent = (step) => {
-    switch (step) {
-      case 0:
-        return (
-          <div className="space-y-4">
-            <div className="navy-gradient-light p-4 rounded-lg mb-6">
-              <h3 className="text-lg font-medium navy-text mb-2">Personal Information</h3>
-              <p className="navy-subtext">Please provide your accurate personal details so we can contact you regarding your application.</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm font-medium navy-text mb-1">Loan Type</label>
-                <select 
-                  name="loanType" 
-                  value={formData.loanType} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  required
-                >
-                  <option value="">Select Loan Type</option>
-                  <option value="personal">Personal Loan</option>
-                  <option value="business">Business Loan</option>
-                  <option value="home">Home Loan</option>
-                  <option value="education">Education Loan</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium navy-text mb-1">First Name</label>
-                <input 
-                  type="text" 
-                  name="firstName" 
-                  value={formData.firstName} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium navy-text mb-1">Last Name</label>
-                <input 
-                  type="text" 
-                  name="lastName" 
-                  value={formData.lastName} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium navy-text mb-1">Email Address</label>
-                <input 
-                  type="email" 
-                  name="email" 
-                  value={formData.email} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium navy-text mb-1">Phone Number</label>
-                <input 
-                  type="tel" 
-                  name="phone" 
-                  value={formData.phone} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  required
-                />
-              </div>
-              
-              <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm font-medium navy-text mb-1">Address</label>
-                <textarea 
-                  name="address" 
-                  value={formData.address} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  rows="3"
-                  required
-                ></textarea>
-              </div>
-            </div>
-          </div>
-        );
-      case 1:
-        return (
-          <div className="space-y-4">
-            <div className="navy-gradient-light p-4 rounded-lg mb-6">
-              <h3 className="text-lg font-medium navy-text mb-2">Employment Details</h3>
-              <p className="navy-subtext">Your employment information helps us determine your loan eligibility and terms.</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm font-medium navy-text mb-1">Employment Status</label>
-                <select 
-                  name="employmentStatus" 
-                  value={formData.employmentStatus} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  required
-                >
-                  <option value="">Select Status</option>
-                  <option value="employed">Employed</option>
-                  <option value="self-employed">Self Employed</option>
-                  <option value="business">Business Owner</option>
-                  <option value="retired">Retired</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium navy-text mb-1">Employer Name</label>
-                <input 
-                  type="text" 
-                  name="employerName" 
-                  value={formData.employerName} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium navy-text mb-1">Job Title</label>
-                <input 
-                  type="text" 
-                  name="jobTitle" 
-                  value={formData.jobTitle} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium navy-text mb-1">Monthly Income ($)</label>
-                <input 
-                  type="number" 
-                  name="monthlyIncome" 
-                  value={formData.monthlyIncome} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium navy-text mb-1">Years Employed</label>
-                <input 
-                  type="number" 
-                  name="yearsEmployed" 
-                  value={formData.yearsEmployed} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-        );
-      case 2:
-        return (
-          <div className="space-y-4">
-            <div className="navy-gradient-light p-4 rounded-lg mb-6">
-              <h3 className="text-lg font-medium navy-text mb-2">Loan Details</h3>
-              <p className="navy-subtext">Tell us about the loan you're looking for and how you plan to use it.</p>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <label className="block text-sm font-medium navy-text mb-1">Loan Amount ($)</label>
-                <input 
-                  type="number" 
-                  name="loanAmount" 
-                  value={formData.loanAmount} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium navy-text mb-1">Loan Purpose</label>
-                <textarea 
-                  name="loanPurpose" 
-                  value={formData.loanPurpose} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  rows="3"
-                  required
-                ></textarea>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium navy-text mb-1">Loan Term</label>
-                <select 
-                  name="loanTerm" 
-                  value={formData.loanTerm} 
-                  onChange={handleChange}
-                  className="navy-input w-full"
-                  required
-                >
-                  <option value="">Select Term</option>
-                  <option value="12">12 months</option>
-                  <option value="24">24 months</option>
-                  <option value="36">36 months</option>
-                  <option value="48">48 months</option>
-                  <option value="60">60 months</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        );
-        case 3:
-          return (
-            <div className="space-y-4">
-              <div className="navy-gradient-light p-4 rounded-lg mb-6">
-                <h3 className="text-lg font-medium navy-text mb-2">Required Documents</h3>
-                <p className="navy-subtext">Confirm you have the necessary documents to complete your loan application.</p>
-              </div>
-              
-              <div className="space-y-4 p-6 bg-white rounded-lg shadow-sm border border-gray-200">
-                <p className="mb-4">Please confirm that you have the following documents ready for verification:</p>
-                
-                <div className="space-y-3">
-                  <div className="flex items-start">
-                    <input 
-                      type="checkbox" 
-                      id="hasIdentityProof" 
-                      name="hasIdentityProof" 
-                      checked={formData.hasIdentityProof} 
-                      onChange={handleChange}
-                      className="mt-1 mr-3"
-                    />
-                    <div>
-                      <label htmlFor="hasIdentityProof" className="font-medium navy-text">Government-issued ID</label>
-                      <p className="text-sm text-gray-500 navy-subtext">Passport, driver's license, or national ID card</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start">
-                    <input 
-                      type="checkbox" 
-                      id="hasAddressProof" 
-                      name="hasAddressProof" 
-                      checked={formData.hasAddressProof} 
-                      onChange={handleChange}
-                      className="mt-1 mr-3"
-                    />
-                    <div>
-                      <label htmlFor="hasAddressProof" className="font-medium">Proof of Address</label>
-                      <p className="text-sm text-gray-500">Utility bill or bank statement from the last 3 months</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start">
-                    <input 
-                      type="checkbox" 
-                      id="hasIncomeProof" 
-                      name="hasIncomeProof" 
-                      checked={formData.hasIncomeProof} 
-                      onChange={handleChange}
-                      className="mt-1 mr-3"
-                    />
-                    <div>
-                      <label htmlFor="hasIncomeProof" className="font-medium">Proof of Income</label>
-                      <p className="text-sm text-gray-500">Recent pay stubs, tax returns, or bank statements</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700">
-                  <p className="text-sm">
-                    <strong>Note:</strong> You don't need to upload these documents now, but they will be required 
-                    during the verification process. Having them ready will speed up your application.
-                  </p>
-                </div>
-              </div>
-            </div>
-          );
-        case 4:
-          return (
-            <div className="space-y-4">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg mb-6">
-                <h3 className="text-lg font-medium text-blue-800 mb-2">Additional Information</h3>
-                <p className="text-gray-600">Help us better understand your financial situation.</p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Number of Existing Loans</label>
-                  <input 
-                    type="number" 
-                    name="existingLoans" 
-                    value={formData.existingLoans} 
-                    onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Credit Score (if known)</label>
-                  <input 
-                    type="number" 
-                    name="creditScore" 
-                    value={formData.creditScore} 
-                    onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    min="300"
-                    max="850"
-                    required
-                  />
-                </div>
-                
-                <div className="col-span-1 md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Expenses ($)</label>
-                  <input 
-                    type="number" 
-                    name="monthlyExpenses" 
-                    value={formData.monthlyExpenses} 
-                    onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg mt-6">
-                <p className="text-sm text-green-800">
-                  <strong>Almost done!</strong> Review all information before submitting your application.
-                  Our team will evaluate your application based on the information provided.
-                </p>
-              </div>
-            </div>
-          );
-        default:
-          return null;
-      }
-    };
-    
-    // Render the application view
-    const renderApplicationView = () => (
-      <div className="navy-bg-light min-h-screen py-8 px-4">
-        <div className="max-w-3xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="navy-heading text-3xl font-bold mb-2">Loan Application</h1>
-            <p className="navy-subtext">Complete all required fields to submit your application</p>
-          </div>
-          
-          {/* Progress bar */}
-          <div className="mb-8">
-            <div className="navy-progress-container">
-              <div 
-                className="navy-progress-bar transition-all duration-300 ease-out"
-                style={{ width: `${progressPercentage}%` }}
-              ></div>
-            </div>
-            <div className="flex justify-between mt-2 navy-subtext">
-              <span>Step {activeStep + 1} of {steps.length}</span>
-              <span>{Math.round(progressPercentage)}% Complete</span>
-            </div>
-          </div>
-          
-          {/* Step indicators */}
-          <div className="flex mb-8 overflow-x-auto pb-2">
-            {steps.map((step, index) => (
-              <div 
-                key={index}
-                className="flex-shrink-0 flex flex-col items-center mx-2 first:ml-0 last:mr-0"
-              >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 ${
-                  index < activeStep ? 'navy-step-completed' : 
-                  index === activeStep ? 'navy-step-active' : 
-                  'navy-step-incomplete'
-                }`}>
-                  {index < activeStep ? '✓' : index + 1}
-                </div>
-                <span className="text-xs whitespace-nowrap navy-subtext">{step.title}</span>
-              </div>
-            ))}
-          </div>
-          
-          {/* Form container */}
-          <div className="navy-card mb-8">
-            <div className="px-6 py-8">
-              {renderStepContent(activeStep)}
-            </div>
-            
-            {/* Navigation buttons */}
-            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
-              <button
-                onClick={handleBack}
-                disabled={activeStep === 0}
-                className={`${
-                  activeStep === 0 
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                    : 'navy-btn-secondary'
-                }`}
-              >
-                Previous
-              </button>
-              
-              <button
-                onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-                className="navy-btn-primary"
-              >
-                {activeStep === steps.length - 1 ? 'Submit Application' : 'Next Step'}
-              </button>
-            </div>
-          </div>
-          
-          {/* Help section */}
-          <div className="text-center navy-subtext">
-            <p>Need help with your application? <button className="navy-text font-medium">Contact Support</button></p>
-          </div>
-        </div>
-      </div>
-    );
 
-    // Render the guide view
-    const renderGuideView = () => (
-      <div className="navy-bg-light min-h-screen">
-        {/* Hero Banner */}
-        <div className="navy-gradient-primary text-white py-16 px-4">
-          <div className="max-w-6xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Apply for Your Loan Today</h1>
-            <p className="text-xl mb-8">Fast approval, competitive rates, and a simple application process</p>
-            <button 
-              onClick={handleStartApplication}
-              className="navy-btn-secondary transform hover:-translate-y-1"
-            >
-              Start Your Application
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+  const getLoanTypeIcon = (loanType) => {
+    switch(loanType?.toLowerCase()) {
+      case 'home loan': return <Home className="w-5 h-5" />;
+      case 'car loan': return <Car className="w-5 h-5" />;
+      case 'education loan': return <GraduationCap className="w-5 h-5" />;
+      case 'business loan': return <Building className="w-5 h-5" />;
+      default: return <CreditCard className="w-5 h-5" />;
+    }
+  };
 
+  const handleChange = (field, value) => {
+    setAnswers({ ...answers, [field]: value });
+  };
+
+  const handleNext = () => {
+    if (step < questions.length - 1) {
+      setStep(step + 1);
+    } else {
+      applyFilters();
+      setSubmitted(true);
+    }
+  };
+
+  const applyFilters = () => {
+    let results = banks.filter((b) => {
+      const bankCredit = Number(b.eligibility.creditScore) || 650;
+      const bankIncome = Number(b.eligibility.minIncome.replace(/\D/g, "")) || 0;
+      const bankMinAge = Number(b.eligibility.minAge) || 18;
+      const bankMaxAge = Number(b.eligibility.maxAge) || 60;
+      const bankTenureMax = Number(b.eligibility.tenure.split("–")[1]) || 60;
+
+      return (
+        (!answers.creditScore || Number(answers.creditScore) >= bankCredit) &&
+        (!answers.income || Number(answers.income) >= bankIncome) &&
+        (!answers.employmentType ||
+          b.eligibility.employmentType.toLowerCase().includes(answers.employmentType.toLowerCase())) &&
+        (!answers.age || (Number(answers.age) >= bankMinAge && Number(answers.age) <= bankMaxAge)) &&
+        (!answers.loanType || b.loanType.toLowerCase() === answers.loanType.toLowerCase()) &&
+        (!answers.tenure || Number(answers.tenure) <= bankTenureMax)
+      );
+    });
+
+    // Limit results to 15 banks
+    setFilteredBanks(results.slice(0, 15));
+  };
+
+  const resetForm = () => {
+    setStep(0);
+    setAnswers({
+      creditScore: "",
+      income: "",
+      employmentType: "",
+      age: "",
+      loanType: "",
+      tenure: "",
+    });
+    setFilteredBanks([]);
+    setSubmitted(false);
+  };
+
+  if (loading) {
     return (
-      <div>
-        {currentView === 'guide' ? renderGuideView() : renderApplicationView()}
-        
-        {/* Success modal */}
-        {isSubmitted && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
-            <div className="navy-card max-w-md w-full p-6">
-              <div className="text-center mb-4">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full navy-bg-light navy-text text-2xl mb-4">
-                  ✓
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative">
+            <div className="w-20 h-20 border-4 border-blue-200 rounded-full animate-spin border-t-blue-600 mx-auto"></div>
+            <div className="absolute inset-0 w-20 h-20 border-4 border-transparent rounded-full animate-ping border-t-blue-400 mx-auto"></div>
+          </div>
+          <p className="mt-4 text-lg text-gray-600 animate-pulse">Loading bank data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8 animate-fade-in">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            🏦 Indian Bank Loan Finder
+          </h1>
+          <p className="text-gray-600 text-lg">Find the perfect loan tailored just for you!</p>
+        </div>
+
+        {!submitted ? (
+          /* Question Card */
+          <div className="relative">
+            {/* Progress Bar */}
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm text-gray-500">Progress</span>
+                <span className="text-sm text-gray-500">{step + 1} of {questions.length}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div 
+                  className="h-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-700 ease-out"
+                  style={{ width: `${((step + 1) / questions.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Question Card */}
+            <div 
+              key={step}
+              className={`bg-white rounded-3xl shadow-2xl p-8 md:p-12 transform transition-all duration-500 ${
+                inputFocused ? 'scale-105' : 'hover:scale-102'
+              } hover:shadow-3xl border border-gray-100`}
+              style={{
+                animation: 'slideInUp 0.6s ease-out'
+              }}
+            >
+              {/* Icon and Question */}
+              <div className="flex items-center justify-center mb-8">
+                <div className={`p-4 rounded-full bg-gradient-to-r ${questions[step].gradient} text-white shadow-lg transform transition-transform duration-300 hover:scale-110`}>
+                  {questions[step].icon}
                 </div>
-                <h2 className="text-2xl font-bold navy-text">Application Submitted!</h2>
               </div>
-              
-              <p className="navy-subtext mb-6 text-center">
-                Thank you for your application. We've received your information and will review it shortly.
-                You'll receive an email confirmation with your application reference number.
+
+              <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">
+                {questions[step].label}
+              </h2>
+
+              {/* Input Field */}
+              <div className="max-w-md mx-auto mb-8">
+                {questions[step].type === "select" ? (
+                  <div className="space-y-3">
+                    {questions[step].options.map((option, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleChange(questions[step].field, option)}
+                        className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left hover:shadow-lg transform hover:scale-105 ${
+                          answers[questions[step].field] === option
+                            ? `border-transparent bg-gradient-to-r ${questions[step].gradient} text-white shadow-lg`
+                            : 'border-gray-200 bg-white hover:border-blue-300 text-gray-700'
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <input
+                    type="number"
+                    placeholder={questions[step].placeholder || "Enter value"}
+                    value={answers[questions[step].field]}
+                    onChange={(e) => handleChange(questions[step].field, e.target.value)}
+                    onFocus={() => setInputFocused(true)}
+                    onBlur={() => setInputFocused(false)}
+                    className="w-full p-4 text-xl text-center border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-300 bg-white shadow-inner"
+                  />
+                )}
+              </div>
+
+              {/* Next Button */}
+              <div className="text-center">
+                <button
+                  onClick={handleNext}
+                  disabled={!answers[questions[step].field]}
+                  className={`px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform ${
+                    answers[questions[step].field]
+                      ? `bg-gradient-to-r ${questions[step].gradient} text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95`
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  {step < questions.length - 1 ? '✨ Next Step' : '🔍 Find My Banks'}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Results */
+          <div className="animate-fade-in">
+            {/* Results Header */}
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">
+                🎉 Perfect Matches Found!
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Here are the banks that match your criteria
               </p>
-              
-              <div className="navy-alert-info mb-6">
-                <p className="navy-text font-medium">What happens next?</p>
-                <ul className="mt-2 navy-subtext">
-                  <li className="mb-1">• We'll review your application within 2-3 business days</li>
-                  <li className="mb-1">• You may be contacted for additional information</li>
-                  <li>• Final decision will be communicated via email</li>
-                </ul>
-              </div>
-              
-              <button 
-                onClick={() => setIsSubmitted(false)}
-                className="navy-btn-primary w-full"
+              <button
+                onClick={resetForm}
+                className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
-                Close
+                🔄 Start Over
               </button>
             </div>
+
+            {/* Results Grid */}
+            {filteredBanks.length > 0 ? (
+              <div className="grid gap-6 md:gap-8">
+                {filteredBanks.map((b, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-102 border border-gray-100 overflow-hidden"
+                    style={{
+                      animation: `slideInUp 0.6s ease-out ${idx * 0.1}s both`
+                    }}
+                  >
+                    {/* Bank Header */}
+                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="p-2 bg-white bg-opacity-20 rounded-lg">
+                            {getLoanTypeIcon(b.loanType)}
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold">{b.bankName}</h3>
+                            <p className="text-blue-100">{b.loanType}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-blue-100">Interest Rate</p>
+                          <p className="text-lg font-bold">{b.eligibility.interestRate}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bank Details */}
+                    <div className="p-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <DollarSign className="w-5 h-5 text-green-600" />
+                          <div>
+                            <p className="text-sm text-gray-500">Min Income</p>
+                            <p className="font-semibold">{b.eligibility.minIncome}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <User className="w-5 h-5 text-blue-600" />
+                          <div>
+                            <p className="text-sm text-gray-500">Employment</p>
+                            <p className="font-semibold">{b.eligibility.employmentType}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <Calendar className="w-5 h-5 text-purple-600" />
+                          <div>
+                            <p className="text-sm text-gray-500">Age Range</p>
+                            <p className="font-semibold">{b.eligibility.minAge}–{b.eligibility.maxAge} years</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <Calendar className="w-5 h-5 text-orange-600" />
+                          <div>
+                            <p className="text-sm text-gray-500">Tenure</p>
+                            <p className="font-semibold">{b.eligibility.tenure} months</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Apply Button */}
+                      <a
+                        href={b.eligibility.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block w-full text-center bg-gradient-to-r from-green-500 to-teal-600 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 no-underline"
+                      >
+                        🚀 Apply Now at {b.bankName}
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">😔</div>
+                <h3 className="text-2xl font-bold text-gray-700 mb-4">No banks match your criteria</h3>
+                <p className="text-gray-600 mb-6">
+                  We couldn't find any banks matching your requirements. Try adjusting your criteria.
+                </p>
+                <button
+                  onClick={resetForm}
+                  className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  🔄 Try Again
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
-    );
+
+      <style jsx>{`
+        @keyframes slideInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.8s ease-out;
+        }
+
+        .hover\\:scale-102:hover {
+          transform: scale(1.02);
+        }
+
+        .hover\\:scale-105:hover {
+          transform: scale(1.05);
+        }
+
+        .active\\:scale-95:active {
+          transform: scale(0.95);
+        }
+
+        .shadow-3xl {
+          box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .no-underline {
+          text-decoration: none !important;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+      `}</style>
+    </div>
+  );
 };
 
-export default LoanApplicationGuide;
+export default BankLoanFinderDynamicLimited;

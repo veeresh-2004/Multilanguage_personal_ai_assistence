@@ -51,23 +51,11 @@ const FinancialTips = () => {
   const [chatHistory, setChatHistory] = useState([]);
 
   const handleFeatureClick = (feature) => {
-    switch (feature) {
-      case 'chat':
-        navigate('/ChatBot.jsx');
-        break;
-      case 'voice':
-        navigate('/speech-to-text');
-        break;
-      case 'advisor':
-        navigate('/chatbot');
-        break;
-      case 'language':
-        navigate('/language-selector');
-        break;
-      default:
-        break;
-    }
-  };
+  if (feature.path) {
+    navigate(feature.path);
+  }
+};
+
 
   const handleSendMessage = () => {
     if (chatMessage.trim()) {
@@ -97,7 +85,9 @@ const FinancialTips = () => {
       icon: <AiIcon fontSize="large" />,
       title: "Smart Advisor",
       description: "Personalized financial recommendations",
-      key: 'advisor'
+      key: 'advisor',
+      path: '/banklists'
+
     },
     {
       icon: <TranslateIcon fontSize="large" />,
@@ -269,7 +259,7 @@ const FinancialTips = () => {
               {aiFeatures.map((feature, index) => (
                 <Paper
                   key={index}
-                  onClick={() => handleFeatureClick(feature.key)}
+                  onClick={() => handleFeatureClick(feature)} 
                   sx={{
                     p: 3,
                     mb: 2,
