@@ -11,7 +11,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #c09b9b;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -30,10 +30,12 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;   /* stack children vertically */
+  align-items: stretch;     /* children take full width */
+  justify-content: flex-start; /* no vertical centering */
 }
 
 h1 {

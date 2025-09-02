@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { 
@@ -15,8 +16,21 @@ import {
   IconButton,
   Link,
   Rating,
-  Avatar
+  Avatar,
+  Stepper,
+  Step,
+  StepLabel,
+  StepContent,
+  Slider,
+  Chip,
+  Tabs,
+  Tab,
+  CardMedia,
+  CardContent,
+  Grow,
 } from '@mui/material';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+
 import { 
   AccountBalance as BankIcon,
   TrendingUp as GrowthIcon,
@@ -34,7 +48,18 @@ import {
   LinkedIn as LinkedInIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
-  LocationOn as LocationIcon
+  LocationOn as LocationIcon,
+  People as PeopleIcon,
+  PersonAdd as RegisterIcon,
+  Assignment as ApplicationIcon,
+  VerifiedUser as VerificationIcon,
+  AccountBalance as ApprovalIcon,
+  Payment as DisbursalIcon,
+  Calculate as CalculateIcon,
+  AccessTime as TimeIcon,
+  AttachMoney as MoneyIcon,
+  Support as SupportIcon,
+  Analytics as AnalyticsIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { keyframes } from '@mui/system';
@@ -53,6 +78,83 @@ const pulseAnimation = keyframes`
   100% { transform: scale(1); }
 `;
 
+// Animated Counter Component
+const AnimatedCounter = ({ end, duration = 2000, suffix = '' }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      setCount(Math.floor(progress * end));
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+    window.requestAnimationFrame(step);
+  }, [end, duration]);
+
+  return <span>{count.toLocaleString()}{suffix}</span>;
+};
+
+// Stats Card Component
+const StatCard = ({ icon: Icon, value, label, color, delay }) => {
+  const theme = useTheme();
+  
+  return (
+    <Grow in={true} style={{ transitionDelay: delay }}>
+      <Card
+        sx={{
+          height: '100%',
+          background: `linear-gradient(135deg, ${color}15 0%, ${color}05 100%)`,
+          border: `1px solid ${alpha(color, 0.2)}`,
+          borderRadius: '20px',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            transform: 'translateY(-10px) scale(1.02)',
+            boxShadow: `0 20px 40px ${alpha(color, 0.15)}`,
+            border: `1px solid ${alpha(color, 0.4)}`,
+          },
+        }}
+      >
+        <CardContent sx={{ textAlign: 'center', p: 3 }}>
+          <Box
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 70,
+              height: 70,
+              borderRadius: '50%',
+              background: `linear-gradient(135deg, ${color} 0%, ${alpha(color, 0.8)} 100%)`,
+              mb: 2,
+              boxShadow: `0 10px 20px ${alpha(color, 0.3)}`,
+            }}
+          >
+            <Icon sx={{ fontSize: 35, color: 'white' }} />
+          </Box>
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: 700,
+              color: color,
+              mb: 1,
+              fontSize: { xs: '2rem', md: '2.5rem' },
+            }}
+          >
+            <AnimatedCounter end={parseInt(value)} suffix={value.includes('%') ? '%' : '+'} />
+          </Typography>
+          <Typography variant="h6" color="text.secondary">
+            {label}
+          </Typography>
+        </CardContent>
+      </Card>
+    </Grow>
+  );
+};
+
+// Original Feature Component
 const Feature = ({ icon, title, description, delay }) => {
   const theme = useTheme();
   const IconComponent = icon;
@@ -113,6 +215,7 @@ const Feature = ({ icon, title, description, delay }) => {
   );
 };
 
+// Testimonial Card Component
 const TestimonialCard = ({ name, role, content, rating, image, delay }) => {
   return (
     <Fade in={true} style={{ transitionDelay: delay }}>
@@ -160,9 +263,76 @@ const TestimonialCard = ({ name, role, content, rating, image, delay }) => {
   );
 };
 
+// Main Home Component
 const Home = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const theme = useTheme();
+
+  // Loan Process State
+  const [activeStep, setActiveStep] = useState(0);
+  
+  // Calculator State
+  const [loanAmount, setLoanAmount] = useState(100000);
+  const [interestRate, setInterestRate] = useState(8.5);
+  const [tenure, setTenure] = useState(12);
+  const [emi, setEmi] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalInterest, setTotalInterest] = useState(0);
+  
+  // Features Gallery State
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  // EMI Calculation Effect
+  useEffect(() => {
+    const monthlyRate = interestRate / (12 * 100);
+    const numPayments = tenure;
+    
+    if (monthlyRate === 0) {
+      const calculatedEmi = loanAmount / numPayments;
+      setEmi(calculatedEmi);
+      setTotalAmount(loanAmount);
+      setTotalInterest(0);
+    } else {
+      const calculatedEmi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+                           (Math.pow(1 + monthlyRate, numPayments) - 1);
+      setEmi(calculatedEmi);
+      setTotalAmount(calculatedEmi * numPayments);
+      setTotalInterest((calculatedEmi * numPayments) - loanAmount);
+    }
+  }, [loanAmount, interestRate, tenure]);
+
+  // Data Arrays
+  const stats = [
+    {
+      icon: PeopleIcon,
+      value: '50000',
+      label: 'Happy Customers',
+      color: theme.palette.primary.main,
+      delay: '100ms',
+    },
+    {
+      icon: BankIcon,
+      value: '200',
+      label: 'Partner Banks',
+      color: '#4caf50',
+      delay: '200ms',
+    },
+    {
+      icon: TrendingUpIcon,
+      value: '95',
+      label: 'Approval Rate',
+      color: '#ff9800',
+      delay: '300ms',
+    },
+    {
+      icon: SpeedIcon,
+      value: '24',
+      label: 'Hours Processing',
+      color: '#e91e63',
+      delay: '400ms',
+    },
+  ];
 
   const features = [
     {
@@ -217,6 +387,139 @@ const Home = () => {
       delay: '300ms',
     },
   ];
+
+  const steps = [
+    {
+      label: 'Quick Registration',
+      description: 'Create your account in just 2 minutes with basic details',
+      icon: RegisterIcon,
+      image: '/Home_Images/reg.png',
+      details: 'Simple form with email, phone, and basic information. No complex documentation required at this stage.',
+      color: '#1976d2',
+    },
+    {
+      label: 'Smart LoanMate Application',
+      description: 'Our AI guides you through a personalized application process',
+      icon: ApplicationIcon,
+      image: 'Home_Images/Application.png',
+      details: 'AI-powered form that adapts based on your loan type and profile. Get real-time eligibility feedback.',
+      color: '#4caf50',
+    },
+    {
+      label: 'Instant Requirement Verification',
+      description: 'Automated document verification with simple steps by filling out the form you get verified instantly for the loan',
+      icon: VerificationIcon,
+      image: 'Home_Images/requirments.png',
+      details: 'fill out the required information and go through our secure portal. Our AI verifies authenticity and completeness instantly.',
+      color: '#ff9800',
+    },
+    {
+      label: 'AI- Integrated loan Dashboard',
+      description: 'you can able to access the all loan related information in one place',
+      icon: DisbursalIcon,
+      image: 'Home_Images/Dashboard.png',
+      details: 'Once logined, feautres are enabled  through secure loanmate platform directly to your Mobile/Desktop.',
+      color: '#9c27b0',
+    },
+    {
+      label: 'Guding to get Quick Approval',
+      description: 'Get approval decisions within 24 hours',
+      icon: ApprovalIcon,
+      image: 'https://media.edq.com/49dba1/globalassets/infographics/the-journey-of-a-loan-application.png',
+      details: 'Our advanced Feauters assess your details and provide instant pre-approval or quick final decisions.',
+      color: '#e91e63',
+    },
+    {
+      label: 'Get Ai Sugestion to Manage your loan from OurFinMate Bot',
+      description: 'It will resolve your all queries regarding loans',
+      icon: DisbursalIcon,
+      image: 'Home_Images/Chatbot.png',
+      details: 'Designed to provide instant answers, personalized advice, and step-by-step assistance throughout your loan journey.',
+      color: '#9c27b0',
+    },
+  ];
+
+  const loanTypes = [
+    { name: 'Personal', rate: 12.5, color: '#1976d2' },
+    { name: 'Home', rate: 8.5, color: '#4caf50' },
+    { name: 'Car', rate: 10.5, color: '#ff9800' },
+    { name: 'Business', rate: 14.0, color: '#e91e63' },
+  ];
+
+  const featureCategories = [
+    {
+      label: 'Security Features',
+      features: [
+        {
+          title: 'Bank-Grade Security',
+          description: 'Your data is protected with the same security standards used by major banks',
+          image: 'https://gensparkpublicblob.blob.core.windows.net/user-upload-image/moa_upload_image/77e0064b-e7f8-48c7-9939-b129b166a90d',
+          icon: SecurityIcon,
+          color: '#1976d2',
+        },
+        {
+          title: 'Encrypted Transactions',
+          description: 'All your transactions and personal data are encrypted end-to-end',
+          image: 'https://www.apexure.com/uploads/financial-services-website-design.webp',
+          icon: SecurityIcon,
+          color: '#4caf50',
+        },
+      ],
+    },
+    {
+      label: 'Smart Processing',
+      features: [
+        {
+          title: 'AI-Powered Assessment',
+          description: 'Our AI evaluates your application in real-time for instant decisions',
+          image: 'https://gensparkpublicblob.blob.core.windows.net/user-upload-image/moa_upload_image/d29dda3a-e34b-4143-97ec-d3a3497d804a',
+          icon: SpeedIcon,
+          color: '#ff9800',
+        },
+        {
+          title: 'Quick Approvals',
+          description: 'Get loan approvals in as little as 24 hours with our streamlined process',
+          image: 'https://images.wondershare.com/edrawmax/article2023/bank-loan-process-flow-chart/bank-loan-process-flowchart-template.jpg',
+          icon: SpeedIcon,
+          color: '#e91e63',
+        },
+      ],
+    },
+    {
+      label: 'Customer Support',
+      features: [
+        {
+          title: '24/7 Support',
+          description: 'Round-the-clock customer support through chat, phone, and email',
+          image: 'https://cdn.prod.website-files.com/63fc977c14aaea404dce4439/66bdb8fc338f1b2857ecfd42_65e83eac6c82c8bf9a510b01_Image%25205.png',
+          icon: SupportIcon,
+          color: '#9c27b0',
+        },
+        {
+          title: 'Personal Advisor',
+          description: 'Dedicated loan advisors to guide you through your entire journey',
+          image: 'https://knowledge.hubspot.com/hubfs/financial-website-design-7-20241004-896301.webp',
+          icon: SupportIcon,
+          color: '#00bcd4',
+        },
+      ],
+    },
+  ];
+
+  // Event Handlers
+  const handleStepNext = () => {
+    setActiveStep((prevActiveStep) => (prevActiveStep + 1) % steps.length);
+  };
+
+  const handleStepBack = () => {
+    setActiveStep((prevActiveStep) => 
+      prevActiveStep === 0 ? steps.length - 1 : prevActiveStep - 1
+    );
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setSelectedTab(newValue);
+  };
 
   return (
     <Box>
@@ -301,6 +604,385 @@ const Home = () => {
         </Container>
       </Box>
 
+      {/* Interactive Statistics Section */}
+      <Box sx={{ py: 8, bgcolor: 'background.paper' }}>
+        <Container maxWidth="lg">
+          <Fade in={true}>
+            <Typography
+              variant="h2"
+              align="center"
+              gutterBottom
+              sx={{ mb: 6, fontWeight: 700 }}
+            >
+              Trusted by Thousands of Customers
+            </Typography>
+          </Fade>
+          <Grid container spacing={4}>
+            {stats.map((stat, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <StatCard {...stat} />
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+
+
+
+
+      {/* Interactive Loan Process Journey */}
+      <Box sx={{ py: 8, bgcolor: 'grey.50' }}>
+        <Container maxWidth="lg">
+          <Fade in={true}>
+            <Typography
+              variant="h2"
+              align="center"
+              gutterBottom
+              sx={{ mb: 2, fontWeight: 700 }}
+            >
+              Your Loan Journey Made Simple
+            </Typography>
+          </Fade>
+          <Fade in={true} style={{ transitionDelay: '200ms' }}>
+            <Typography
+              variant="h6"
+              align="center"
+              color="text.secondary"
+              sx={{ mb: 6, maxWidth: '600px', mx: 'auto' }}
+            >
+              Experience our streamlined 5-step process designed to get you the funds you need quickly and efficiently
+            </Typography>
+          </Fade>
+
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Stepper activeStep={activeStep} orientation="vertical" sx={{ bgcolor: 'transparent' }}>
+                {steps.map((step, index) => {
+                  const Icon = step.icon;
+                  return (
+                    <Step key={step.label}>
+                      <StepLabel
+                        StepIconComponent={() => (
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: 50,
+                              height: 50,
+                              borderRadius: '50%',
+                              bgcolor: activeStep === index ? step.color : 'grey.300',
+                              color: 'white',
+                              transition: 'all 0.3s ease',
+                              cursor: 'pointer',
+                              '&:hover': {
+                                transform: 'scale(1.1)',
+                                boxShadow: `0 5px 15px ${alpha(step.color, 0.4)}`,
+                              },
+                            }}
+                            onClick={() => setActiveStep(index)}
+                          >
+                            <Icon />
+                          </Box>
+                        )}
+                      >
+                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                          {step.label}
+                        </Typography>
+                      </StepLabel>
+                      <StepContent>
+                        <Typography variant="body1" sx={{ mb: 2 }}>
+                          {step.description}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                          {step.details}
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <Button size="small" onClick={handleStepBack}>
+                            Back
+                          </Button>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={handleStepNext}
+                            sx={{ bgcolor: step.color }}
+                          >
+                            Next Step
+                          </Button>
+                        </Box>
+                      </StepContent>
+                    </Step>
+                  );
+                })}
+              </Stepper>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Fade in={true} key={activeStep}>
+                <Card
+                  sx={{
+                    borderRadius: '20px',
+                    overflow: 'hidden',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="300"
+                    image={steps[activeStep].image}
+                    alt={steps[activeStep].label}
+                    sx={{
+                      objectFit: 'cover',
+                      transition: 'transform 0.3s ease',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                      },
+                    }}
+                  />
+                  <CardContent sx={{ p: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 40,
+                          height: 40,
+                          borderRadius: '50%',
+                          bgcolor: steps[activeStep].color,
+                          color: 'white',
+                          mr: 2,
+                        }}
+                      >
+                      </Box>
+                      <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                        {steps[activeStep].label}
+                      </Typography>
+                    </Box>
+                    <Typography variant="body1" color="text.secondary">
+                      {steps[activeStep].details}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Fade>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+
+
+
+      {/* Interactive Loan Calculator */}
+      <Box sx={{ py: 8, bgcolor: 'background.paper' }}>
+        <Container maxWidth="lg">
+          <Fade in={true}>
+            <Typography
+              variant="h2"
+              align="center"
+              gutterBottom
+              sx={{ mb: 2, fontWeight: 700 }}
+            >
+              Smart Loan Calculator
+            </Typography>
+          </Fade>
+          <Fade in={true} style={{ transitionDelay: '200ms' }}>
+            <Typography
+              variant="h6"
+              align="center"
+              color="text.secondary"
+              sx={{ mb: 6, maxWidth: '600px', mx: 'auto' }}
+            >
+              Calculate your EMI instantly and plan your finances better with our interactive calculator
+            </Typography>
+          </Fade>
+
+          <Grid container spacing={4}>
+            {/* Calculator Input */}
+            <Grid item xs={12} md={6}>
+              <Card
+                sx={{
+                  p: 4,
+                  borderRadius: '20px',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                  background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.05)} 0%, ${alpha(theme.palette.secondary.main, 0.05)} 100%)`,
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+                  <Avatar
+                    sx={{
+                      bgcolor: theme.palette.primary.main,
+                      width: 50,
+                      height: 50,
+                      mr: 2,
+                    }}
+                  >
+                    <CalculateIcon />
+                  </Avatar>
+                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    Loan Calculator
+                  </Typography>
+                </Box>
+
+                {/* Loan Type Selection */}
+                <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+                  Choose Loan Type
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4 }}>
+                  {loanTypes.map((type) => (
+                    <Chip
+                      key={type.name}
+                      label={`${type.name} (${type.rate}%)`}
+                      onClick={() => setInterestRate(type.rate)}
+                      sx={{
+                        bgcolor: interestRate === type.rate ? type.color : 'transparent',
+                        color: interestRate === type.rate ? 'white' : type.color,
+                        border: `2px solid ${type.color}`,
+                        '&:hover': {
+                          bgcolor: type.color,
+                          color: 'white',
+                        },
+                      }}
+                    />
+                  ))}
+                </Box>
+
+                {/* Loan Amount */}
+                <Typography variant="subtitle1" gutterBottom>
+                  Loan Amount: ₹{loanAmount.toLocaleString()}
+                </Typography>
+                <Slider
+                  value={loanAmount}
+                  onChange={(e, value) => setLoanAmount(value)}
+                  min={10000}
+                  max={10000000}
+                  step={10000}
+                  sx={{ mb: 3 }}
+                />
+
+                {/* Interest Rate */}
+                <Typography variant="subtitle1" gutterBottom>
+                  Interest Rate: {interestRate}% per annum
+                </Typography>
+                <Slider
+                  value={interestRate}
+                  onChange={(e, value) => setInterestRate(value)}
+                  min={5}
+                  max={20}
+                  step={0.1}
+                  sx={{ mb: 3 }}
+                />
+
+                {/* Tenure */}
+                <Typography variant="subtitle1" gutterBottom>
+                  Tenure: {tenure} months
+                </Typography>
+                <Slider
+                  value={tenure}
+                  onChange={(e, value) => setTenure(value)}
+                  min={6}
+                  max={360}
+                  step={6}
+                  sx={{ mb: 3 }}
+                />
+              </Card>
+            </Grid>
+
+            {/* Results */}
+            <Grid item xs={12} md={6}>
+              <Grid container spacing={3}>
+                {/* EMI Card */}
+                <Grid item xs={12}>
+                  <Card
+                    sx={{
+                      p: 3,
+                      borderRadius: '16px',
+                      background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${alpha(theme.palette.primary.main, 0.8)} 100%)`,
+                      color: 'white',
+                      boxShadow: `0 15px 35px ${alpha(theme.palette.primary.main, 0.3)}`,
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <MoneyIcon sx={{ mr: 2, fontSize: 30 }} />
+                      <Typography variant="h6">Monthly EMI</Typography>
+                    </Box>
+                    <Typography variant="h3" sx={{ fontWeight: 700 }}>
+                      ₹{Math.round(emi).toLocaleString()}
+                    </Typography>
+                  </Card>
+                </Grid>
+
+                {/* Total Amount */}
+                <Grid item xs={12} sm={6}>
+                  <Card
+                    sx={{
+                      p: 3,
+                      borderRadius: '16px',
+                      background: `linear-gradient(135deg, #4caf50 0%, ${alpha('#4caf50', 0.8)} 100%)`,
+                      color: 'white',
+                      boxShadow: `0 15px 35px ${alpha('#4caf50', 0.3)}`,
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <TrendingUpIcon sx={{ mr: 1 }} />
+                      <Typography variant="subtitle1">Total Amount</Typography>
+                    </Box>
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                      ₹{Math.round(totalAmount).toLocaleString()}
+                    </Typography>
+                  </Card>
+                </Grid>
+
+                {/* Total Interest */}
+                <Grid item xs={12} sm={6}>
+                  <Card
+                    sx={{
+                      p: 3,
+                      borderRadius: '16px',
+                      background: `linear-gradient(135deg, #ff9800 0%, ${alpha('#ff9800', 0.8)} 100%)`,
+                      color: 'white',
+                      boxShadow: `0 15px 35px ${alpha('#ff9800', 0.3)}`,
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <TimeIcon sx={{ mr: 1 }} />
+                      <Typography variant="subtitle1">Total Interest</Typography>
+                    </Box>
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                      ₹{Math.round(totalInterest).toLocaleString()}
+                    </Typography>
+                  </Card>
+                </Grid>
+
+                {/* Action Button */}
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    sx={{
+                      py: 2,
+                      borderRadius: '12px',
+                      fontSize: '1.1rem',
+                      fontWeight: 600,
+                      background: `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${alpha(theme.palette.secondary.main, 0.8)} 100%)`,
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: `0 10px 25px ${alpha(theme.palette.secondary.main, 0.4)}`,
+                      },
+                    }}
+                  >
+                    Apply for This Loan
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
       {/* Features Section */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Typography
@@ -319,6 +1001,131 @@ const Home = () => {
           ))}
         </Grid>
       </Container>
+
+      {/* Enhanced Features Gallery */}
+      <Box sx={{ py: 8, bgcolor: 'grey.50' }}>
+        <Container maxWidth="lg">
+          <Fade in={true}>
+            <Typography
+              variant="h2"
+              align="center"
+              gutterBottom
+              sx={{ mb: 2, fontWeight: 700 }}
+            >
+              Advanced Features & Technology
+            </Typography>
+          </Fade>
+          <Fade in={true} style={{ transitionDelay: '200ms' }}>
+            <Typography
+              variant="h6"
+              align="center"
+              color="text.secondary"
+              sx={{ mb: 6, maxWidth: '600px', mx: 'auto' }}
+            >
+              Discover how our cutting-edge technology makes loan processing faster, safer, and more convenient
+            </Typography>
+          </Fade>
+
+          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
+            <Tabs
+              value={selectedTab}
+              onChange={handleTabChange}
+              centered
+              sx={{
+                '& .MuiTab-root': {
+                  fontSize: '1.1rem',
+                  fontWeight: 600,
+                  px: 4,
+                },
+              }}
+            >
+              {featureCategories.map((category, index) => (
+                <Tab key={index} label={category.label} />
+              ))}
+            </Tabs>
+          </Box>
+
+          <Fade in={true} key={selectedTab}>
+            <Grid container spacing={4}>
+              {featureCategories[selectedTab].features.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <Grid item xs={12} md={6} key={index}>
+                    <Card
+                      sx={{
+                        height: '100%',
+                        borderRadius: '20px',
+                        overflow: 'hidden',
+                        boxShadow: '0 15px 35px rgba(0,0,0,0.08)',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-10px)',
+                          boxShadow: `0 25px 50px ${alpha(feature.color, 0.15)}`,
+                        },
+                      }}
+                    >
+                      <CardMedia
+                        component="img"
+                        height="250"
+                        image={feature.image}
+                        alt={feature.title}
+                        sx={{
+                          transition: 'transform 0.3s ease',
+                          '&:hover': {
+                            transform: 'scale(1.05)',
+                          },
+                        }}
+                      />
+                      <CardContent sx={{ p: 3 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: 50,
+                              height: 50,
+                              borderRadius: '50%',
+                              bgcolor: alpha(feature.color, 0.1),
+                              mr: 2,
+                            }}
+                          >
+                            <Icon sx={{ color: feature.color, fontSize: 24 }} />
+                          </Box>
+                          <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                            {feature.title}
+                          </Typography>
+                        </Box>
+                        <Typography
+                          variant="body1"
+                          color="text.secondary"
+                          sx={{ mb: 3, lineHeight: 1.6 }}
+                        >
+                          {feature.description}
+                        </Typography>
+                        <Button
+                          variant="contained"
+                          sx={{
+                            bgcolor: feature.color,
+                            borderRadius: '25px',
+                            px: 3,
+                            '&:hover': {
+                              bgcolor: alpha(feature.color, 0.8),
+                              transform: 'translateY(-2px)',
+                            },
+                          }}
+                        >
+                          Learn More
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Fade>
+        </Container>
+      </Box>
 
       {/* Loan Types Section */}
       <Box sx={{ bgcolor: 'background.paper', py: 8 }}>

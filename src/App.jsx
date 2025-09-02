@@ -18,7 +18,6 @@ import LoanEligibledata from './components/dashboard/elements/LoanEligibledata';
 import Getknowloans from './components/dashboard/elements/Getknowloans';
 import LoanReviews from './components/dashboard/elements/LoanReviews';
 
-
 const theme = createTheme({
   palette: {
     primary: {
@@ -191,6 +190,7 @@ const AppContent = () => {
              <Route path="/Loan-info" element={<Getknowloans />  } />
               <Route path="/loan-reviews" element={<LoanReviews />  } />
           </Routes>
+          
         </Container>
       </Box>
     </Box>

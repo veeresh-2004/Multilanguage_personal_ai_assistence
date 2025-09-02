@@ -169,7 +169,7 @@ const Dashboard = () => {
               and access detailed analytics. Each card provides specific functionality for your loan portfolio management.
             </p>
             <div className="mt-6">
-              <button onClick={handledclick} className="bg-white text-indigo-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-300 shadow-lg">
+              <button  onClick={() => navigate('/bank-list')} className="bg-white text-indigo-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-300 shadow-lg">
                 Get Started
               </button>
             </div>

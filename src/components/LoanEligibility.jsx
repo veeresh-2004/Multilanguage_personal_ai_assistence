@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import TextToSpeech from '../components/TextToSpeech';
-import "../styles/LoanEligibility.css";
+import '../styles/form.css'
 
 // Icons (from Material UI)
 import {
@@ -757,7 +757,7 @@ const LoanEligibility = () => {
                       color="success"
                       size="large"
                       endIcon={<NextIcon />}
-                      onClick={() => navigate('/loan-application')}
+                      onClick={() => navigate('/bank-list')}
                       sx={{
                         px: 4,
                         py: 1.5,

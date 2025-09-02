@@ -77,6 +77,7 @@ const Navbar = () => {
       </List>
     </Box>
   );
+  
 
   return (
     <AppBar position="fixed">
