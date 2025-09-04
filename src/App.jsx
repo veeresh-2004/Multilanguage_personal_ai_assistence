@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, Box, Container } from '@mui/material';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
-import Login from './components/Login';  // Update the import wherever you use it
-import Signup from './components/Signup';
+import Login from './components/login/Login';  // Update the import wherever you use it
+import Signup from './components/login/Signup';
 import LoanEligibility from './components/LoanEligibility';
-import LoanApplicationGuide from './components/LoanApplicationGuide';
+import LoanApplicationGuide from './components/Loanfinder/LoanApplicationGuide';
 import FinancialTips from './components/FinancialTips';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -17,6 +17,7 @@ import  Dashboard  from './components/dashboard/DashBoard';
 import LoanEligibledata from './components/dashboard/elements/LoanEligibledata';
 import Getknowloans from './components/dashboard/elements/Getknowloans';
 import LoanReviews from './components/dashboard/elements/LoanReviews';
+import Animate from './components/Lanucherdesign/Animate';
 
 const theme = createTheme({
   palette: {
@@ -198,6 +199,21 @@ const AppContent = () => {
 };
 
 function App() {
+  const [loading, setLoading] = useState(true); // Add loading state
+
+  useEffect(() => {
+    // Simulate loading completion after 2 seconds
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    // Display loading animation
+    return <Animate />;
+  }
+
   return (
     <ErrorBoundary>
       <AuthProvider>
