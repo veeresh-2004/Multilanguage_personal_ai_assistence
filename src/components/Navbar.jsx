@@ -29,6 +29,10 @@ import {
   PersonAdd as SignupIcon,
   Logout as LogoutIcon,
 } from '@mui/icons-material';
+import HomeIcon from '@mui/icons-material/Home';
+import GridViewTwoToneIcon from '@mui/icons-material/GridViewTwoTone';
+import TipsAndUpdatesTwoToneIcon from '@mui/icons-material/TipsAndUpdatesTwoTone';
+import TravelExploreTwoToneIcon from '@mui/icons-material/TravelExploreTwoTone';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Import the updated useAuth context
 import LanguageSelector from './LanguageSelector';
@@ -54,10 +58,13 @@ const Navbar = () => {
   };
 
   const menuItems = [
+    { text: 'Home', icon: <HomeIcon />, path: '/' },
     { text: 'Loan Eligibility', icon: <AssessmentIcon />, path: '/loan-eligibility' },
-    { text: 'Find Loan', icon: <DescriptionIcon />, path: '/loan-application' },
-    { text: 'Financial Tips', icon: <TipsIcon />, path: '/financial-tips' },
-    { text: 'DashBoard', icon: <TipsIcon />, path: '/Dashboard' },
+    { text: 'Find Loan', icon: <TravelExploreTwoToneIcon />, path: '/loan-application' },
+    { text: 'Financial Tips', icon: <TipsAndUpdatesTwoToneIcon />, path: '/financial-tips' },
+    { text: 'DashBoard', icon: <GridViewTwoToneIcon />, path: '/Dashboard' },
+    // { text: 'Signup', icon: <TipsIcon />, path: '/signup' },
+    // { text: 'Login', icon: <TipsIcon />, path: '/login' },
   ];
 
   const drawer = (

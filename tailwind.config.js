@@ -6,6 +6,12 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    screens: {
+      sm: '600px', // Change small breakpoint
+      md: '800px', // Change medium breakpoint
+      lg: '1100px', // Change large breakpoint
+      xl: '1400px', // Change extra-large breakpoint
+    },
   },
   plugins: [],
 };
