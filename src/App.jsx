@@ -19,6 +19,7 @@ import Getknowloans from './components/dashboard/elements/Getknowloans';
 import LoanReviews from './components/dashboard/elements/LoanReviews';
 import Animate from './components/Lanucherdesign/Animate';
 
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -205,7 +206,7 @@ function App() {
     // Simulate loading completion after 2 seconds
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 4000);
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 

@@ -1,22 +1,10 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Container,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Divider,
-  IconButton,
-  InputAdornment,
-  Link as MuiLink,
-  Alert,
-} from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Eye, EyeOff, Building2, TrendingUp, Shield, Zap } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { Container } from '@mui/material';
 
-// ✅ Google imports
+// Google imports - keep your existing imports
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 
@@ -41,24 +29,27 @@ const Login = () => {
         email: formData.email,
         name: 'User Name',
       };
-      login(userData);
-      navigate('/');
+  // provide a simple local token so AuthContext treats this as authenticated
+  login(userData, 'local-token');
+  // after login show the app home
+  navigate('/');
     } catch (err) {
       setError('Invalid email or password');
     }
   };
 
-  // ✅ Actual Google login handler
+  // ✅ Your existing Google login handler
   const handleGoogleSuccess = (credentialResponse) => {
     try {
-      const decoded = jwtDecode(credentialResponse.credential); // ✅ FIXED
+      const decoded = jwtDecode(credentialResponse.credential);
       const userData = {
         email: decoded.email,
         name: decoded.name,
         picture: decoded.picture,
       };
-      login(userData);
-      navigate('/');
+  // store the Google credential as token
+  login(userData, credentialResponse.credential || 'google-token');
+  navigate('/');
     } catch (err) {
       setError('Google login failed');
     }
@@ -69,607 +60,211 @@ const Login = () => {
   };
 
   return (
-    <Box
+    <Container
+      maxWidth="lg"
       sx={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%)',
-        position: 'relative',
-        overflow: 'hidden',
-        '@keyframes float': {
-          '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
-          '33%': { transform: 'translateY(-30px) rotate(120deg)' },
-          '66%': { transform: 'translateY(-15px) rotate(240deg)' },
-        },
-        '@keyframes slideInUp': {
-          '0%': { transform: 'translateY(100px)', opacity: 0 },
-          '100%': { transform: 'translateY(0)', opacity: 1 },
-        },
-        '@keyframes pulse': {
-          '0%, 100%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.1)' },
-        },
-        '@keyframes glow': {
-          '0%, 100%': { boxShadow: '0 0 30px rgba(102, 126, 234, 0.6), 0 0 60px rgba(118, 75, 162, 0.4)' },
-          '50%': { boxShadow: '0 0 50px rgba(102, 126, 234, 0.8), 0 0 80px rgba(118, 75, 162, 0.6)' },
-        },
-        '@keyframes orbit': {
-          '0%': { transform: 'rotate(0deg) translateX(100px) rotate(0deg)' },
-          '100%': { transform: 'rotate(360deg) translateX(100px) rotate(-360deg)' },
-        },
-        '@keyframes morphing': {
-          '0%, 100%': { borderRadius: '50% 60% 40% 70%' },
-          '25%': { borderRadius: '70% 40% 60% 50%' },
-          '50%': { borderRadius: '40% 70% 50% 60%' },
-          '75%': { borderRadius: '60% 50% 70% 40%' },
+        padding:0, // Remove padding on all sides
+        '@media (min-width: 600px)': {
+          padding: 0, // Ensure no padding for screens wider than 600px
         },
       }}
     >
-      {/* Animated Background Elements */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '-50px',
-          left: '-50px',
-          width: '200px',
-          height: '200px',
-          background: 'linear-gradient(45deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3))',
-          borderRadius: '50%',
-          animation: 'float 20s ease-in-out infinite, morphing 15s ease-in-out infinite',
-          filter: 'blur(40px)',
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '20%',
-          right: '-100px',
-          width: '300px',
-          height: '300px',
-          background: 'linear-gradient(45deg, rgba(240, 147, 251, 0.4), rgba(245, 87, 108, 0.4))',
-          borderRadius: '50%',
-          animation: 'float 25s ease-in-out infinite reverse, morphing 20s ease-in-out infinite',
-          filter: 'blur(50px)',
-          animationDelay: '5s',
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: '-100px',
-          left: '30%',
-          width: '250px',
-          height: '250px',
-          background: 'linear-gradient(45deg, rgba(79, 172, 254, 0.3), rgba(102, 126, 234, 0.3))',
-          borderRadius: '50%',
-          animation: 'float 18s ease-in-out infinite, morphing 12s ease-in-out infinite',
-          filter: 'blur(45px)',
-          animationDelay: '10s',
-        }}
-      />
+      <div className="min-h-screen flex">
+        {/* Left Side - Hero Section */}
+        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-white-500 to-blue-500 relative overflow-hidden">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0">
+            <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse"></div>
+            <div className="absolute top-1/3 right-10 w-48 h-48 bg-white/5 rounded-full blur-2xl animate-bounce"></div>
+            <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-white/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '1000ms'}}></div>
+          </div>
+          
+          {/* Floating Icons */}
+          <div className="absolute top-0 right-0 text-white/30 animate-bounce" style={{animationDuration: '6s'}}>
+            <Building2 size={40} />
+          </div>
+          <div className="absolute bottom-0 left-0 text-white/20 animate-bounce" style={{animationDelay: '1000ms', animationDuration: '6s'}}>
+            <TrendingUp size={35} />
+          </div>
+          <div className="absolute top-1/2 left-20 text-white/25 animate-bounce" style={{animationDelay: '500ms', animationDuration: '6s'}}>
+            <Shield size={30} />
+          </div>
+          <div className="absolute bottom-48 right-32 text-white/30 animate-pulse" style={{animationDelay: '2000ms'}}>
+            <Zap size={25} />
+          </div>
+          
+          {/* Content */}
+          <div className="relative z-10 flex flex-col justify-center items-center p-12 text-center text-white">
+            <div className="mb-8">
+              <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center animate-pulse">
+                <Building2 size={60} className="text-white" />
+              </div>
+              <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+                Unlock Your Financial Future
+              </h1>
+              <p className="text-xl text-blue-100 leading-relaxed max-w-md">
+                Get instant loans  tips with competitive rates and flexible terms. Your dreams are just one click away.
+              </p>
+            </div>
+            
+            {/* Features */}
+            <div className="grid grid-cols-1 gap-4 mt-8">
+              <div className="flex items-center gap-3 text-blue-100">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                <span>Quick approval in 24 hours</span>
+              </div>
+              <div className="flex items-center gap-3 text-blue-100">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse" style={{animationDelay: '300ms'}}></div>
+                <span>Competitive interest rates</span>
+              </div>
+              <div className="flex items-center gap-3 text-blue-100">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse" style={{animationDelay: '700ms'}}></div>
+                <span>Flexible repayment options</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      {/* Floating Financial Icons with Enhanced Animations */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '10%',
-          left: '10%',
-          fontSize: '4rem',
-          opacity: 0.2,
-          animation: 'orbit 30s linear infinite',
-          transformOrigin: 'center',
-        }}
-      >
-        💰
-      </Box>
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '15%',
-          right: '15%',
-          fontSize: '3.5rem',
-          opacity: 0.15,
-          animation: 'float 22s ease-in-out infinite, pulse 4s ease-in-out infinite',
-          animationDelay: '3s',
-        }}
-      >
-        🏦
-      </Box>
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: '20%',
-          left: '20%',
-          fontSize: '3rem',
-          opacity: 0.18,
-          animation: 'float 28s ease-in-out infinite, pulse 6s ease-in-out infinite',
-          animationDelay: '6s',
-        }}
-      >
-        📊
-      </Box>
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: '30%',
-          right: '10%',
-          fontSize: '3.8rem',
-          opacity: 0.16,
-          animation: 'orbit 35s linear infinite reverse',
-          animationDelay: '9s',
-        }}
-      >
-        💳
-      </Box>
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '5%',
-          fontSize: '2.5rem',
-          opacity: 0.12,
-          animation: 'float 24s ease-in-out infinite, pulse 5s ease-in-out infinite',
-          animationDelay: '12s',
-        }}
-      >
-        💎
-      </Box>
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '70%',
-          right: '5%',
-          fontSize: '2.8rem',
-          opacity: 0.14,
-          animation: 'orbit 26s linear infinite',
-          animationDelay: '15s',
-        }}
-      >
-        🎯
-      </Box>
+        {/* Right Side - Login Form */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-4 bg-gray-50">
+          <div className="w-full max-w-md">
+            {/* Mobile Hero Header (visible only on mobile) */}
+            <div className="lg:hidden text-center mb-8">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                <Building2 size={40} className="text-white" />
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900">FinMate</h1>
+              <p className="text-gray-600">Your trusted financial companion 💼✨</p>
+            </div>
 
-      {/* Animated Particles */}
-      {[...Array(12)].map((_, i) => (
-        <Box
-          key={i}
-          sx={{
-            position: 'absolute',
-            width: '4px',
-            height: '4px',
-            background: 'rgba(255,255,255,0.6)',
-            borderRadius: '50%',
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            animation: `float ${15 + Math.random() * 10}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 5}s`,
-            boxShadow: '0 0 10px rgba(255,255,255,0.8)',
-          }}
-        />
-      ))}
+            {/* Login Form */}
+            
+              <div className="text-center mb-8">
+                <div className="text-4xl mb-4 animate-pulse">🏦</div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                  Welcome Back
+                </h2>
+                <h3 className="text-xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent mb-2">
+                  FinMate
+                </h3>
+                <p className="text-gray-600">Your trusted financial companion 💼✨</p>
+              </div>
 
-      <Container maxWidth="xs">
-        <Box
-          sx={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            py: 2,
-          }}
-        >
-          <Paper
-            elevation={24}
-            sx={{
-              p: 5,
-              width: '100%',
-              borderRadius: 8,
-              maxWidth: 450,
-              background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
-              backdropFilter: 'blur(30px)',
-              border: '1px solid rgba(255,255,255,0.4)',
-              animation: 'slideInUp 1s ease-out',
-              position: 'relative',
-              transition: 'all 0.4s ease',
-              '&:hover': {
-                animation: 'glow 3s ease-in-out infinite',
-                transform: 'translateY(-8px)',
-              },
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '5px',
-                background: 'linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #667eea)',
-                borderRadius: '8px 8px 0 0',
-                backgroundSize: '400% 100%',
-                animation: 'shimmer 4s ease-in-out infinite',
-              },
-              '@keyframes shimmer': {
-                '0%': { backgroundPosition: '-400% 0' },
-                '100%': { backgroundPosition: '400% 0' },
-              },
-            }}
-          >
-            {/* Logo/Header Section */}
-            <Box sx={{ textAlign: 'center', mb: 4 }}>
-              <Box
-                sx={{
-                  fontSize: '4rem',
-                  mb: 2,
-                  animation: 'pulse 3s ease-in-out infinite',
-                  filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
-                }}
-              >
-                🏦
-              </Box>
-              <Typography 
-                variant="h3" 
-                align="center" 
-                gutterBottom 
-                fontWeight="bold"
-                sx={{
-                  background: 'linear-gradient(45deg, #667eea, #764ba2, #f093fb)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundSize: '200% 100%',
-                  animation: 'rainbow-flow 4s ease-in-out infinite',
-                  textShadow: '4px 4px 8px rgba(0,0,0,0.1)',
-                  '@keyframes rainbow-flow': {
-                    '0%': { backgroundPosition: '0% 50%' },
-                    '50%': { backgroundPosition: '100% 50%' },
-                    '100%': { backgroundPosition: '0% 50%' },
-                  },
-                }}
-              >
-                Welcome Back
-              </Typography>
-              <Typography 
-                variant="h5" 
-                align="center" 
-                sx={{
-                  background: 'linear-gradient(45deg, #f5576c, #f093fb)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  fontWeight: 700,
-                  mb: 1,
-                  textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-                }}
-              >
-                FinMate
-              </Typography>
-              <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 2 }}>
-                Your trusted financial companion 💼✨
-              </Typography>
-            </Box>
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl animate-pulse">
+                  <p className="text-red-600 text-sm">{error}</p>
+                </div>
+              )}
 
-            {error && (
-              <Alert 
-                severity="error" 
-                sx={{ 
-                  mb: 3,
-                  animation: 'slideInUp 0.5s ease-out',
-                  borderRadius: 4,
-                  background: 'linear-gradient(45deg, rgba(245, 87, 108, 0.1), rgba(240, 147, 251, 0.1))',
-                  border: '1px solid rgba(245, 87, 108, 0.3)',
-                }}
-              >
-                {error}
-              </Alert>
-            )}
+              {/* Google Login */}
+              <div className="mb-6">
+                <div className="flex justify-center transform transition-all duration-300 hover:-translate-y-1 hover:scale-105">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleFailure}
+                  />
+                </div>
+              </div>
 
-            {/* Email & Password Form */}
-            <form onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                label="Email Address"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                margin="normal"
-                required
-                size="medium"
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 4,
-                    background: 'rgba(255,255,255,0.8)',
-                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
-                      background: 'rgba(255,255,255,0.95)',
-                    },
-                    '&.Mui-focused': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 12px 35px rgba(102, 126, 234, 0.4)',
-                      background: 'rgba(255,255,255,1)',
-                    },
-                  },
-                  '& .MuiInputLabel-root.Mui-focused': {
-                    color: '#667eea',
-                    fontWeight: 600,
-                  },
-                  '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#667eea',
-                    borderWidth: '2px',
-                    boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)',
-                  },
-                }}
-              />
+              {/* Divider */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white text-blue-600 font-semibold">OR</span>
+                </div>
+              </div>
 
-              <TextField
-                fullWidth
-                label="Password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={handleChange}
-                margin="normal"
-                required
-                size="medium"
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 4,
-                    background: 'rgba(255,255,255,0.8)',
-                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 8px 25px rgba(118, 75, 162, 0.3)',
-                      background: 'rgba(255,255,255,0.95)',
-                    },
-                    '&.Mui-focused': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 12px 35px rgba(118, 75, 162, 0.4)',
-                      background: 'rgba(255,255,255,1)',
-                    },
-                  },
-                  '& .MuiInputLabel-root.Mui-focused': {
-                    color: '#764ba2',
-                    fontWeight: 600,
-                  },
-                  '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#764ba2',
-                    borderWidth: '2px',
-                    boxShadow: '0 0 0 3px rgba(118, 75, 162, 0.1)',
-                  },
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                        size="small"
-                        sx={{
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            transform: 'scale(1.2) rotate(15deg)',
-                            color: '#667eea',
-                            background: 'rgba(102, 126, 234, 0.1)',
-                          },
-                        }}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
+              {/* Email & Password Form */}
+              <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
+                <div>
+                  <label htmlFor="email" className="block text-sm lg:text-base font-medium text-gray-700 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 lg:py-4 text-sm lg:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:shadow-md hover:-translate-y-1 bg-gray-50 focus:bg-white"
+                    placeholder="Enter your email"
+                  />
+                </div>
 
-              <Button 
-                fullWidth 
-                type="submit" 
-                variant="contained" 
-                size="large" 
-                sx={{ 
-                  mt: 4, 
-                  mb: 3,
-                  borderRadius: 4,
-                  background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                  boxShadow: '0 8px 25px rgba(102, 126, 234, 0.4)',
-                  textTransform: 'none',
-                  fontSize: '1.2rem',
-                  fontWeight: 700,
-                  py: 2,
-                  position: 'relative',
-                  overflow: 'hidden',
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    transform: 'translateY(-6px) scale(1.02)',
-                    boxShadow: '0 15px 40px rgba(102, 126, 234, 0.6)',
-                    '&::before': {
-                      transform: 'translateX(100%)',
-                    },
-                  },
-                  '&:active': {
-                    transform: 'translateY(-2px) scale(0.98)',
-                  },
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: '-100%',
-                    width: '100%',
-                    height: '100%',
-                    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
-                    transition: 'transform 0.8s ease',
-                  },
-                }}
-              >
-                Sign In to FinMate 🚀
-              </Button>
-            </form>
+                <div>
+                  <label htmlFor="password" className="block text-sm lg:text-base font-medium text-gray-700 mb-2">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="password"
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 lg:py-4 pr-12 text-sm lg:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:shadow-md hover:-translate-y-1 bg-gray-50 focus:bg-white"
+                      placeholder="Enter your password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 hover:scale-125 transition-all duration-300"
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                </div>
 
-            <Divider 
-              sx={{ 
-                my: 3,
-                position: 'relative',
-                '&::before, &::after': {
-                  borderColor: 'rgba(102, 126, 234, 0.3)',
-                  borderWidth: '1px',
-                },
-                '&::before': {
-                  animation: 'shimmer 3s ease-in-out infinite',
-                },
-              }}
-            >
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  background: 'linear-gradient(45deg, #667eea, #764ba2)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  fontWeight: 600,
-                  px: 3,
-                  py: 1,
-                  borderRadius: 2,
-                  background: 'rgba(255,255,255,0.9)',
-                  color: '#667eea',
-                }}
-              >
-                OR
-              </Typography>
-            </Divider>
-
-            {/* ✅ Google Login Button */}
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                justifyContent: 'center',
-                mb: 3,
-                '& > div': {
-                  borderRadius: '15px !important',
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                  overflow: 'hidden',
-                  '&:hover': {
-                    transform: 'translateY(-4px) scale(1.05)',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-                  },
-                  '&:active': {
-                    transform: 'translateY(-1px) scale(1.02)',
-                  },
-                },
-              }}
-            >
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={handleGoogleFailure}
-              />
-            </Box>
-
-            <Box sx={{ textAlign: 'center', mt: 4 }}>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                Don't have an account?{' '}
-                <MuiLink 
-                  component={Link} 
-                  to="/signup" 
-                  sx={{
-                    background: 'linear-gradient(45deg, #667eea, #764ba2)',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    textDecoration: 'none',
-                    fontWeight: 700,
-                    fontSize: '1.1rem',
-                    position: 'relative',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      '&::after': {
-                        width: '100%',
-                        height: '3px',
-                      },
-                    },
-                    '&::after': {
-                      content: '""',
-                      position: 'absolute',
-                      bottom: '-3px',
-                      left: 0,
-                      width: 0,
-                      height: '2px',
-                      background: 'linear-gradient(45deg, #667eea, #764ba2)',
-                      transition: 'all 0.4s ease',
-                      borderRadius: '2px',
-                    },
-                  }}
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 lg:py-4 rounded-xl font-semibold text-base lg:text-lg hover:from-blue-700 hover:to-purple-700 transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 focus:ring-4 focus:ring-blue-200 relative overflow-hidden group"
                 >
-                  Sign up
-                </MuiLink>
-              </Typography>
-              <MuiLink
-                component={Link}
-                to="/forgot-password"
-                sx={{
-                  display: 'inline-block',
-                  background: 'linear-gradient(45deg, #f093fb, #f5576c)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  textDecoration: 'none',
-                  fontWeight: 600,
-                  fontSize: '1rem',
-                  position: 'relative',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    transform: 'translateY(-2px) scale(1.05)',
-                    '&::after': {
-                      width: '100%',
-                      height: '2px',
-                    },
-                  },
-                  '&::after': {
-                    content: '""',
-                    position: 'absolute',
-                    bottom: '-2px',
-                    left: 0,
-                    width: 0,
-                    height: '1px',
-                    background: 'linear-gradient(45deg, #f093fb, #f5576c)',
-                    transition: 'all 0.4s ease',
-                    borderRadius: '1px',
-                  },
-                }}
-              >
-                Forgot Password? 🔐
-              </MuiLink>
-            </Box>
+                  <span className="relative z-10">Sign In to FinMate 🚀</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                </button>
+              </form>
 
-            {/* Additional Animated Elements */}
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: -15,
-                right: -15,
-                opacity: 0.1,
-                fontSize: '5rem',
-                animation: 'pulse 4s ease-in-out infinite',
-                animationDelay: '2s',
-                filter: 'blur(1px)',
-              }}
-            >
-              📈
-            </Box>
-            <Box
-              sx={{
-                position: 'absolute',
-                top: -10,
-                left: -10,
-                opacity: 0.08,
-                fontSize: '3rem',
-                animation: 'float 20s ease-in-out infinite',
-                animationDelay: '5s',
-              }}
-            >
-              💡
-            </Box>
-          </Paper>
-        </Box>
-      </Container>
-    </Box>
+              {/* Footer Links */}
+              <div className="mt-8 space-y-4 text-center">
+                <p className="text-gray-600">
+                  Don't have an account?{' '}
+                  <Link 
+                    to="/signup" 
+                    className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-all duration-300 hover:-translate-y-0.5 inline-block relative"
+                  >
+                    Sign up
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 hover:w-full"></span>
+                  </Link>
+                </p>
+                <Link 
+                  to="/forgot-password" 
+                  className="block text-purple-600 hover:text-purple-700 font-medium hover:underline transition-all duration-300 hover:-translate-y-0.5 relative inline-block"
+                >
+                  Forgot Password? 🔐
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-pink-500 transition-all duration-300 hover:w-full"></span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Custom CSS for additional animations */}
+        <style jsx>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+          }
+          
+          .animate-float {
+            animation: float 6s ease-in-out infinite;
+          }
+        `}</style>
+    
+    </Container>
   );
 };
 

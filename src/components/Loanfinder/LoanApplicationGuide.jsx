@@ -166,7 +166,6 @@ const LoanApplicationGuide = () => {
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
             🏦 Smart Loan Finder</h1>
             <p className="text-1xl">Quickly compare and match the best bank loans for your needs</p>
-          
           <p className="text-gray-600 text-3xl">Find the perfect loan tailored just for you!</p>
         </div>
 

@@ -524,7 +524,6 @@ const FinancialTips = () => {
                       '&:hover': {
                         color: 'primary.main',
                         bgcolor: 'primary.main',
-                        color: 'white',
                         '& .MuiSvgIcon-root': {
                           transform: 'scale(1.1)',
                         }

@@ -11,7 +11,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #c09b9b;
+  background-color: #325eef;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -36,6 +36,7 @@ body {
   flex-direction: column;   /* stack children vertically */
   align-items: stretch;     /* children take full width */
   justify-content: flex-start; /* no vertical centering */
+  padding: 0px 0px  0px 0px;
 }
 
 h1 {

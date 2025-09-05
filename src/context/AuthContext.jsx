@@ -8,6 +8,8 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  // store a reset callback for external widgets (like webchat)
+  const [webchatReset, setWebchatReset] = useState(null);
 
   useEffect(() => {
     // Check if user is logged in (e.g., check localStorage or session)
@@ -39,6 +41,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('userData');
     setIsAuthenticated(false);
     setUser(null);
+    // reset webchat conversation if a reset function is registered
+    try {
+      if (webchatReset && typeof webchatReset === 'function') webchatReset();
+    } catch (e) {
+      // ignore errors
+    }
   };
 
   // Update user information
@@ -53,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, updateUser, registerWebchatReset: setWebchatReset }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { 
   User, 
   Mail, 
@@ -19,32 +20,6 @@ import {
 const Profile = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-
-  const useAuth = () => {
-    const [currentUser, setCurrentUser] = useState(null);
-
-    useEffect(() => {
-      const savedUser = JSON.parse(localStorage.getItem('userData')) || null;
-      if (savedUser) {
-        setCurrentUser(savedUser);
-      }
-    }, []);
-
-    const updateUser = (userData) => {
-      const updatedUser = { ...currentUser, ...userData };
-      localStorage.setItem('userData', JSON.stringify(updatedUser));
-      setCurrentUser(updatedUser);
-    };
-
-    const logout = () => {
-      localStorage.removeItem('userData');
-      setCurrentUser(null);
-      alert('Logged out successfully!');
-      navigate('/login');
-    };
-
-    return { user: currentUser, updateUser, logout };
-  };
 
   const { user, updateUser, logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
