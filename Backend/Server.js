@@ -1,33 +1,33 @@
-// server.js
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+
+import authRoutes from "./routes/authRoutes.js";
+import { errorHandler } from "./middleware/errorMiddleware.js";
+
+dotenv.config();
 
 const app = express();
-app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
-// Connect to MongoDB
-mongoose.connect("mongodb://localhost:27017/loansDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+// allow frontend (React) to call backend
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true
+}));
 
-// Define Loan Schema
-const loanSchema = new mongoose.Schema({
-  Loan_Type: String,
-  Loan_Amount_Applied: Number,
-  Loan_Tenure_Applied: Number,
-  Monthly_Income: Number,
-  Existing_EMI: Number
-});
+app.get("/", (req, res) => res.send("API running"));
+app.use("/api/auth", authRoutes);
+app.use(errorHandler);
 
-const Loan = mongoose.model("Loan", loanSchema);
-
-// API to get all loans
-app.get("/api/loans", async (req, res) => {
-  const loans = await Loan.find({});
-  res.json(loans);
-});
-
-app.listen(5000, () => console.log("Server running on port 5000"));
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected");
+    app.listen(process.env.PORT, () =>
+      console.log(`Server running on port ${process.env.PORT}`)
+    );
+  })
+  .catch(err => console.log("DB connection error:", err));
