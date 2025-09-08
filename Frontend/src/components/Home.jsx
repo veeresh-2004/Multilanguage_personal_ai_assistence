@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-
 import { 
   Box, 
   Typography, 
@@ -265,7 +263,6 @@ const TestimonialCard = ({ name, role, content, rating, image, delay }) => {
 
 // Main Home Component
 const Home = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -337,8 +334,8 @@ const Home = () => {
   const features = [
     {
       icon: AssessmentIcon,
-      title: t('features.eligibility.title', 'Smart Loan Eligibility Check'),
-      description: t('features.eligibility.description', 'Get instant assessment of your loan eligibility using our advanced AI-powered system.'),
+      title: "Smart Loan Eligibility Check",
+      description: "Get instant assessment of your loan eligibility using our advanced AI-powered system.",
       delay: '0ms',
     },
     {
@@ -556,7 +553,7 @@ const Home = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Typography
                       variant="h5"
-                      sx={{ mb: 4, opacity: 0.9 }}
+                      sx={{ mb: 4, opacity: 0.99 }}
                     >
                       Get instant loan eligibility checks, personalized recommendations, and expert financial guidance powered by AI
                     </Typography>
@@ -1002,130 +999,6 @@ const Home = () => {
         </Grid>
       </Container>
 
-      {/* Enhanced Features Gallery */}
-      <Box sx={{ py: 8, bgcolor: 'grey.50' }}>
-        <Container maxWidth="lg">
-          <Fade in={true}>
-            <Typography
-              variant="h2"
-              align="center"
-              gutterBottom
-              sx={{ mb: 2, fontWeight: 700 }}
-            >
-              Advanced Features & Technology
-            </Typography>
-          </Fade>
-          <Fade in={true} style={{ transitionDelay: '200ms' }}>
-            <Typography
-              variant="h6"
-              align="center"
-              color="text.secondary"
-              sx={{ mb: 6, maxWidth: '600px', mx: 'auto' }}
-            >
-              Discover how our cutting-edge technology makes loan processing faster, safer, and more convenient
-            </Typography>
-          </Fade>
-
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
-            <Tabs
-              value={selectedTab}
-              onChange={handleTabChange}
-              centered
-              sx={{
-                '& .MuiTab-root': {
-                  fontSize: '1.1rem',
-                  fontWeight: 600,
-                  px: 4,
-                },
-              }}
-            >
-              {featureCategories.map((category, index) => (
-                <Tab key={index} label={category.label} />
-              ))}
-            </Tabs>
-          </Box>
-
-          <Fade in={true} key={selectedTab}>
-            <Grid container spacing={4}>
-              {featureCategories[selectedTab].features.map((feature, index) => {
-                const Icon = feature.icon;
-                return (
-                  <Grid item xs={12} md={6} key={index}>
-                    <Card
-                      sx={{
-                        height: '100%',
-                        borderRadius: '20px',
-                        overflow: 'hidden',
-                        boxShadow: '0 15px 35px rgba(0,0,0,0.08)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          transform: 'translateY(-10px)',
-                          boxShadow: `0 25px 50px ${alpha(feature.color, 0.15)}`,
-                        },
-                      }}
-                    >
-                      <CardMedia
-                        component="img"
-                        height="250"
-                        image={feature.image}
-                        alt={feature.title}
-                        sx={{
-                          transition: 'transform 0.3s ease',
-                          '&:hover': {
-                            transform: 'scale(1.05)',
-                          },
-                        }}
-                      />
-                      <CardContent sx={{ p: 3 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              width: 50,
-                              height: 50,
-                              borderRadius: '50%',
-                              bgcolor: alpha(feature.color, 0.1),
-                              mr: 2,
-                            }}
-                          >
-                            <Icon sx={{ color: feature.color, fontSize: 24 }} />
-                          </Box>
-                          <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                            {feature.title}
-                          </Typography>
-                        </Box>
-                        <Typography
-                          variant="body1"
-                          color="text.secondary"
-                          sx={{ mb: 3, lineHeight: 1.6 }}
-                        >
-                          {feature.description}
-                        </Typography>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            bgcolor: feature.color,
-                            borderRadius: '25px',
-                            px: 3,
-                            '&:hover': {
-                              bgcolor: alpha(feature.color, 0.8),
-                              transform: 'translateY(-2px)',
-                            },
-                          }}
-                        >
-                          Learn More
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                );
-              })}
-            </Grid>
-          </Fade>
-        </Container>
-      </Box>
 
       {/* Loan Types Section */}
       <Box sx={{ bgcolor: 'background.paper', py: 8 }}>
@@ -1136,7 +1009,7 @@ const Home = () => {
             gutterBottom
             sx={{ mb: 6 }}
           >
-            Explore Our Loan Types
+            Explore The Loan Types And Get Know Your Eligibility
           </Typography>
           <LoanTypes />
         </Container>

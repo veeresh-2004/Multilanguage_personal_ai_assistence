@@ -167,42 +167,9 @@ const LoanTypes = () => {
   };
 
   const handleEligibilityCheck = () => {
-    // Basic eligibility check logic
-    const { creditScore, income, employment } = loanDetails;
-    const amount = Number(loanDetails.amount);
-    
-    let eligible = true;
-    let message = "Based on the information provided:";
-    let details = [];
-    
-    if (creditScore < 650) {
-      eligible = false;
-      details.push("Credit score should be 650 or higher");
-    }
-    
-    if (income < 30000) {
-      eligible = false;
-      details.push("Annual income should be $30,000 or higher");
-    }
-    
-    if (employment !== 'full-time' && employment !== 'self-employed') {
-      details.push("Full-time employment preferred");
-    }
-    
-    if (amount > parseFloat(selectedLoan.maxAmount.replace(/[$,]/g, ''))) {
-      eligible = false;
-      details.push(`Amount exceeds maximum loan limit of ${selectedLoan.maxAmount}`);
-    }
-
-    alert(
-      `Eligibility Result:\n\n${message}\n\n${details.join('\n')}\n\n${
-        eligible 
-          ? "✅ You appear to be eligible for this loan!" 
-          : "⚠️ You may need to adjust some factors to qualify."
-      }`
-    );
-    
-    setIsEligibilityModalOpen(false);
+    // Optionally pass loan details via state or params
+   
+    navigate('/loan-eligibility');
   };
 
   const handleApplySubmit = () => {
@@ -443,4 +410,4 @@ const LoanTypes = () => {
   );
 };
 
-export default LoanTypes; 
+export default LoanTypes;

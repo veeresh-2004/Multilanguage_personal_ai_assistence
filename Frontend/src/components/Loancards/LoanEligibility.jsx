@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import TextToSpeech from '../components/TextToSpeech';
-import '../styles/form.css'
+import TextToSpeech from '../TextToSpeech';
+import '../../styles/form.css'
 
 // Icons (from Material UI)
 import {
@@ -34,11 +33,10 @@ import {
 } from '@mui/material';
 
 const LoanEligibility = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const [progress, setProgress] = useState(0);
   const [showForm, setShowForm] = useState(false);
-  
+
   // Form data
   const [formData, setFormData] = useState({
     name: "",
@@ -62,7 +60,7 @@ const LoanEligibility = () => {
     loanAmount: "",
     loanTenure: "",
   });
-  
+
   const [message, setMessage] = useState("");
   const [eligibilityDetails, setEligibilityDetails] = useState(null);
   const [isFormValid, setIsFormValid] = useState(false);
@@ -89,14 +87,16 @@ const LoanEligibility = () => {
       title: 'Bank Account',
       description: 'Active bank account with minimum 6 months history',
       requirements: ['Regular transactions', 'Minimum balance maintenance', 'No overdrafts'],
-      color: '#2196f3'
+      color: '#2196f3',
+      path:'/BankAccount',
     },
     {
       icon: <JobIcon sx={{ fontSize: '3rem' }} />,
       title: 'Employment',
       description: 'Stable employment or business income',
       requirements: ['Minimum 2 years experience', 'Regular salary credits', 'Employment verification'],
-      color: '#4caf50'
+      color: '#4caf50',
+      path:'/Employment',
     },
     {
       icon: <CreditIcon sx={{ fontSize: '3rem' }} />,
@@ -104,14 +104,14 @@ const LoanEligibility = () => {
       description: 'Good credit history and score',
       requirements: ['Credit score above 700', 'No defaults', 'Clean credit history'],
       color: '#f44336',
-      Element:<CreditScore/>
+      path:'/CreditScore',
     },
     {
       icon: <MoneyIcon sx={{ fontSize: '3rem' }} />,
       title: 'Income',
       description: 'Sufficient monthly income',
       requirements: ['Debt-to-Income ratio < 50%', 'Stable income source', 'Additional income proofs'],
-      color: '#ff9800'
+      color: '#ff9800',
     },
     {
       icon: <DocumentIcon sx={{ fontSize: '3rem' }} />,
@@ -125,49 +125,52 @@ const LoanEligibility = () => {
       title: 'Property',
       description: 'Property evaluation',
       requirements: ['Legal clearance', 'Valuation report', 'Property insurance'],
-      color: '#795548'
+      color: '#795548',
     }
   ];
 
+  const handleclick = (path) =>{
+    navigate(path);
+  }
   // Basic form validation
   const validateForm = () => {
     const { phone, pan, aadhar, age, income, creditScore } = formData;
-    
+
     if (!/^[0-9]{10}$/.test(phone))
       return "Phone number must be exactly 10 digits.";
-    
+
     if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan))
       return "PAN must be in format ABCDE1234F.";
-    
+
     if (!/^[0-9]{12}$/.test(aadhar)) 
       return "Aadhar must be exactly 12 digits.";
-    
+
     if (parseInt(age) < 18) 
       return "You must be at least 18 years old to apply for a loan.";
-    
+
     if (parseInt(age) > 75) 
-      return "Maximum age limit for most loans is 75. years";
-    
+      return "Maximum age limit for most loans is 75 years.";
+
     if (parseInt(income) <= 0) 
       return "Please enter a valid income amount.";
-    
+
     if (creditScore && (parseInt(creditScore) < 300 || parseInt(creditScore) > 900))
       return "Credit score must be between 300 and 900.";
-    
+
     return "";
   };
 
   // Check eligibility based on loan type and financial details
   const checkEligibility = () => {
     const { loanType, income, age, creditScore, employmentType, employmentDuration, existingLoans, loanAmount } = formData;
-    
+
     // Convert values to numeric for calculations
     const numericIncome = parseInt(income) || 0;
     const numericAge = parseInt(age) || 0;
     const numericCreditScore = parseInt(creditScore) || 650; // Default to average if not provided
     const numericExistingLoans = parseInt(existingLoans) || 0;
     const numericLoanAmount = parseInt(loanAmount) || 0;
-    
+
     // Initialize result object
     const result = {
       eligible: false,
@@ -179,71 +182,71 @@ const LoanEligibility = () => {
 
     // Basic eligibility check based on income to loan ratio
     let maxEmiPercentage = 0.5; // Default: 50% of monthly income
-    
+
     // Different criteria based on loan type
     switch(loanType) {
       case "Home Loan":
         maxEmiPercentage = 0.6;
         result.maxEligibleAmount = numericIncome * 5;
         result.suggestedInterestRate = 7.5 + (numericCreditScore < 750 ? 1 : 0);
-        
+
         if (numericAge > 45) {
           result.maxEligibleAmount *= 0.8;
           result.recommendations.push("Since you're over 45, consider a shorter loan tenure");
         }
-        
+
         if (numericCreditScore < 650) {
           result.reasons.push("Low credit score limits home loan approval chances");
           result.suggestedInterestRate += 1;
         }
         break;
-        
+
       case "Education Loan":
         maxEmiPercentage = 0.45;
         result.maxEligibleAmount = numericIncome * 2;
         result.suggestedInterestRate = 8.5 + (numericCreditScore < 700 ? 1 : 0);
-        
+
         if (employmentType !== "Salaried") {
           result.recommendations.push("Education loans generally require a co-applicant for non-salaried individuals");
         }
         break;
-        
+
       case "Personal Loan":
         maxEmiPercentage = 0.4;
         result.maxEligibleAmount = numericIncome * 1.5;
         result.suggestedInterestRate = 10.5 + (numericCreditScore < 700 ? 2 : 0);
-        
+
         if (numericCreditScore < 700) {
           result.reasons.push("Personal loans typically require a good credit score");
           result.suggestedInterestRate += 1.5;
         }
-        
+
         if (employmentDuration < 1) {
           result.reasons.push("Less than 1 year of employment may affect personal loan approval");
         }
         break;
-        
+
       case "Car Loan":
         maxEmiPercentage = 0.5;
         result.maxEligibleAmount = numericIncome * 2.5;
         result.suggestedInterestRate = 9.0 + (numericCreditScore < 700 ? 1.5 : 0);
-        
+
         if (numericExistingLoans > 2) {
           result.reasons.push("Multiple existing loans may affect car loan approval");
           result.recommendations.push("Consider settling some existing loans before applying");
         }
         break;
-        
+
       default:
         result.reasons.push("Please select a valid loan type");
         return result;
     }
-    
+
     if (numericLoanAmount > result.maxEligibleAmount) {
       result.reasons.push(`Requested amount exceeds your estimated eligibility of ₹${result.maxEligibleAmount.toLocaleString()}`);
       result.recommendations.push("Consider applying for a lower loan amount");
     }
-    
+
     if (numericExistingLoans > 0) {
       const remainingIncomePercentage = 1 - (numericExistingLoans * 0.15);
       if (remainingIncomePercentage < maxEmiPercentage) {
@@ -251,30 +254,30 @@ const LoanEligibility = () => {
         result.reasons.push("Existing loan obligations reduce your eligibility");
       }
     }
-    
+
     if (numericCreditScore < 600) {
       result.reasons.push("Credit score below 600 significantly affects loan approval chances");
     } else if (numericCreditScore >= 750) {
       result.recommendations.push("Your excellent credit score may qualify you for preferential interest rates");
       result.suggestedInterestRate -= 0.5;
     }
-    
+
     if (result.reasons.length <= 1 && numericCreditScore >= 600) {
       result.eligible = true;
       if (result.reasons.length === 1 && result.reasons[0].includes("exceeds your estimated eligibility")) {
         result.eligible = false;
       }
     }
-    
+
     result.suggestedInterestRate = Math.max(7, Math.min(18, result.suggestedInterestRate));
-    
+
     return result;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const errorMsg = validateForm();
-    
+
     if (errorMsg) {
       setMessage(errorMsg);
       setEligibilityDetails(null);
@@ -282,7 +285,7 @@ const LoanEligibility = () => {
     } else {
       setLoading(true);
       setIsFormValid(true);
-      
+
       setTimeout(() => {
         const eligibilityResult = checkEligibility();
         setEligibilityDetails(eligibilityResult);
@@ -302,7 +305,7 @@ const LoanEligibility = () => {
   };
 
   return (
-    <Container maxWidth="xl" className="loan-eligibility-container">
+    <Container maxWidth="xl" className="loan-eligibility-container cursor-pointer">
       {/* Eligibility Criteria Cards Section */}
       {!showForm && (
         <Box sx={{ py: 4 }}>
@@ -318,10 +321,10 @@ const LoanEligibility = () => {
             }}
           >
             Check Your Loan Eligibility
-            {showForm ? <TextToSpeech text={t('title')} /> : null}
+            {showForm ? <TextToSpeech text="Check Your Loan Eligibility" /> : null}
           </Typography>
 
-          <Box sx={{ mb: 4 }}>
+          <Box sx={{ mb: 4 }} >
             <LinearProgress 
               variant="determinate" 
               value={progress} 
@@ -348,6 +351,7 @@ const LoanEligibility = () => {
                 <Grid item xs={12} sm={6} md={4}>
                   <Paper
                     elevation={3}
+                    onClick={() => handleclick(step.path)}
                     sx={{
                       p: 3,
                       height: '100%',
@@ -497,12 +501,13 @@ const LoanEligibility = () => {
 
       {/* Eligibility Form Section */}
       {showForm && (
+
         <div className="form-container">
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <h2 className="form-title">
-              {t('WELCOME TO APPLICATION')}
-              <TextToSpeech text={t('title')} />
-            </h2>
+            <h4 className="form-title text-2xl font-bold text-blue-800 mb-4">
+              HEY USER FIll YOUR DETAILS HERE TO CHECK YOUR ELIGIBILITY
+              <TextToSpeech text="HEY USER FIll YOUR DETAILS HERE TO CHECK YOUR ELIGIBILITY" />
+            </h4>
             <Button 
               variant="outlined"
               onClick={() => setShowForm(false)}
@@ -516,86 +521,86 @@ const LoanEligibility = () => {
           
           <form onSubmit={handleSubmit} className="loan-form">
             <div className="form-section">
-              <h3>{t('PERSONAL_DETAILS')}</h3>
+              <h3>PERSONAL DETAILS</h3>
               <div className="form-grid">
                 <div className="form-group">
-                  <label>{t('name')}</label>
-                  <input type="text" name="name" required onChange={handleChange} value={formData.name} />
+                  <label>Name</label>
+                  <input type="text" name="name" required onChange={handleChange} value={formData.name} placeholder='Eg.Veeresh'/>
                 </div>
                 <div className="form-group">
-                  <label>{t('phone')}</label>
-                  <input type="text" name="phone" required onChange={handleChange} value={formData.phone} />
+                  <label>Phone</label>
+                  <input type="text" name="phone" required onChange={handleChange} value={formData.phone} placeholder='Eg.+911234567890' />
                 </div>
                 <div className="form-group">
-                  <label>{t('email')}</label>
-                  <input type="email" name="email" onChange={handleChange} value={formData.email} />
+                  <label>Email</label>
+                  <input type="email" name="email" onChange={handleChange} value={formData.email} placeholder='Eg.example@gmail.com' />
                 </div>
                 <div className="form-group">
-                  <label>{t('age')}</label>
-                  <input type="number" name="age" required onChange={handleChange} value={formData.age} />
+                  <label>Age</label>
+                  <input type="number" name="age" required onChange={handleChange} value={formData.age}  placeholder='Eg.20'/>
                 </div>
                 <div className="form-group">
-                  <label>{t('sex')}</label>
-                  <select name="sex" required onChange={handleChange} value={formData.sex}>
-                    <option value="">{t('Please Select Your Gender')}</option>
-                    <option value="Male">{t('male')}</option>
-                    <option value="Female">{t('female')}</option>
-                    <option value="Other">{t('other')}</option>
+                  <label>Gender</label>
+                  <select name="sex" required onChange={handleChange} value={formData.sex} placeholder='Please select your gender'>
+                    <option value="">Please Select Your Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
               </div>
             </div>
             
             <div className="form-section">
-              <h3>{t('IDENTITYDETAILS')}</h3>
+              <h3>IDENTITY DETAILS</h3>
               <div className="form-grid">
                 <div className="form-group">
-                  <label>{t('pan')}</label>
-                  <input type="text" name="pan" required onChange={handleChange} value={formData.pan} />
+                  <label>PAN</label>
+                  <input type="text" name="pan" required onChange={handleChange} value={formData.pan}  placeholder='Eg. ABCDE1234F'/>
                 </div>
                 <div className="form-group">
-                  <label>{t('aadhar')}</label>
-                  <input type="text" name="aadhar" required onChange={handleChange} value={formData.aadhar} />
+                  <label>Aadhar</label>
+                  <input type="text" name="aadhar" required onChange={handleChange} value={formData.aadhar} placeholder='Eg. 1234-5678-9012' />
                 </div>
                 <div className="form-group">
-                  <label>{t('address')}</label>
-                  <input type="text" name="address" onChange={handleChange} value={formData.address} />
+                  <label>Address</label>
+                  <input type="text" name="address" onChange={handleChange} value={formData.address} placeholder='Eg. 123 Main St' />
                 </div>
                 <div className="form-group">
-                  <label>{t('city')}</label>
-                  <input type="text" name="city" onChange={handleChange} value={formData.city} />
+                  <label>City</label>
+                  <input type="text" name="city" onChange={handleChange} value={formData.city} placeholder='Eg. New York' />
                 </div>
                 <div className="form-group">
-                  <label>{t('state')}</label>
-                  <input type="text" name="state" onChange={handleChange} value={formData.state} />
+                  <label>State</label>
+                  <input type="text" name="state" onChange={handleChange} value={formData.state} placeholder='Eg. Karnataka' />
                 </div>
                 <div className="form-group">
-                  <label>{t('pincode')}</label>
-                  <input type="text" name="pincode" onChange={handleChange} value={formData.pincode} />
+                  <label>Pincode</label>
+                  <input type="text" name="pincode" onChange={handleChange} value={formData.pincode} placeholder='Eg. 581115' />
                 </div>
               </div>
             </div>
             
             <div className="form-section">
-              <h3>{t('FINANCIALDETAILS')}</h3>
+              <h3>FINANCIAL DETAILS</h3>
               <div className="form-grid">
                 <div className="form-group">
-                  <label>{t('occupation')}</label>
-                  <input type="text" name="occupation" required onChange={handleChange} value={formData.occupation} />
+                  <label>Occupation</label>
+                  <input type="text" name="occupation" required onChange={handleChange} value={formData.occupation} placeholder='Eg. Software Engineer'/>
                 </div>
                 <div className="form-group">
-                  <label>{t('employmentType')}</label>
-                  <select name="employmentType" required onChange={handleChange} value={formData.employmentType}>
-                    <option value="">{t('Select-type')}</option>
-                    <option value="Salaried">{t('salaried')}</option>
-                    <option value="Self-Employed">{t('selfEmployed')}</option>
-                    <option value="Business Owner">{t('businessOwner')}</option>
-                    <option value="Freelancer">{t('freelancer')}</option>
-                    <option value="Unemployed">{t('unemployed')}</option>
+                  <label>Employment Type</label>
+                  <select name="employmentType" required onChange={handleChange} value={formData.employmentType} placeholder='Please select your employment type'>
+                    <option value="">Select type</option>
+                    <option value="Salaried">Salaried</option>
+                    <option value="Self-Employed">Self-Employed</option>
+                    <option value="Business Owner">Business Owner</option>
+                    <option value="Freelancer">Freelancer</option>
+                    <option value="Unemployed">Unemployed</option>
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>{t('EMPLOYMENT_DURATION')}</label>
+                  <label>Employment Duration</label>
                   <input 
                     type="number" 
                     name="employmentDuration" 
@@ -603,10 +608,11 @@ const LoanEligibility = () => {
                     step="0.5" 
                     onChange={handleChange} 
                     value={formData.employmentDuration} 
+                    placeholder='In years (e.g., 2, 3.5)'
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t('annualIncome')}</label>
+                  <label>Annual Income</label>
                   <input 
                     type="number" 
                     name="income" 
@@ -614,20 +620,22 @@ const LoanEligibility = () => {
                     min="0" 
                     onChange={handleChange} 
                     value={formData.income} 
+                    placeholder='In INR (e.g., 500000)'
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t('existingLoans')}</label>
+                  <label>Existing Loans</label>
                   <input 
                     type="number" 
                     name="existingLoans" 
                     min="0" 
                     onChange={handleChange} 
                     value={formData.existingLoans} 
+                    placeholder='Number of existing loans (e.g., 0, 1, 2)'
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t('CREDIT_SCORE')}</label>
+                  <label>Credit Score</label>
                   <input 
                     type="number" 
                     name="creditScore" 
@@ -643,40 +651,41 @@ const LoanEligibility = () => {
             </div>
             
             <div className="form-section">
-              <h3>{t('LAONDETAILS')}</h3>
+              <h3>LOAN DETAILS</h3>
               <div className="form-grid">
                 <div className="form-group">
-                  <label>{t('loanType')}</label>
-                  <select name="loanType" required onChange={handleChange} value={formData.loanType}>
-                    <option value="">{t('Type-of-loan')}</option>
-                    <option value="Education Loan">{t('education')}</option>
-                    <option value="Home Loan">{t('home')}</option>
-                    <option value="Personal Loan">{t('personal')}</option>
-                    <option value="Car Loan">{t('car')}</option>
+                  <label>Loan Type</label>
+                  <select name="loanType" required onChange={handleChange} value={formData.loanType}  placeholder='Please select the type of loan you are applying for'>
+                    <option value="">Type of loan</option>
+                    <option value="Education Loan">Education</option>
+                    <option value="Home Loan">Home</option>
+                    <option value="Personal Loan">Personal</option>
+                    <option value="Car Loan">Car</option>
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>{t('Loan Amount')}</label>
+                  <label>Loan Amount</label>
                   <input 
                     type="number" 
                     name="loanAmount" 
                     min="0" 
                     onChange={handleChange} 
                     value={formData.loanAmount} 
+                    placeholder='In INR (e.g., 200000)'
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t('loanTenure')}</label>
-                  <select name="loanTenure" onChange={handleChange} value={formData.loanTenure}>
-                    <option value="">{t('select')}</option>
-                    <option value="1">1 {t('year')}</option>
-                    <option value="2">2 {t('years')}</option>
-                    <option value="3">3 {t('years')}</option>
-                    <option value="5">5 {t('years')}</option>
-                    <option value="10">10 {t('years')}</option>
-                    <option value="15">15 {t('years')}</option>
-                    <option value="20">20 {t('years')}</option>
-                    <option value="30">30 {t('years')}</option>
+                  <label>Loan Tenure</label>
+                  <select name="loanTenure" onChange={handleChange} value={formData.loanTenure} placeholder='Please select loan tenure'>
+                    <option value="">Select</option>
+                    <option value="1">1 year</option>
+                    <option value="2">2 years</option>
+                    <option value="3">3 years</option>
+                    <option value="5">5 years</option>
+                    <option value="10">10 years</option>
+                    <option value="15">15 years</option>
+                    <option value="20">20 years</option>
+                    <option value="30">30 years</option>
                   </select>
                 </div>
               </div>
@@ -684,7 +693,7 @@ const LoanEligibility = () => {
             
             <div className="button-container">
               <button type="submit" disabled={loading}>
-                {loading ? t('common.processing') : t('checkEligibility')}
+                {loading ? "Processing..." : "Check Eligibility"}
               </button>
             </div>
             
@@ -697,30 +706,30 @@ const LoanEligibility = () => {
             
             {eligibilityDetails && (
               <div className="eligibility-results">
-                <h3>{t('assessmentTitle')}</h3>
+                <h3>Eligibility Assessment</h3>
                 
                 <div className="result-grid">
                   <div className="result-item">
-                    <span className="result-label">{t('status')}:</span>
+                    <span className="result-label">Status:</span>
                     <span className={`result-value ${eligibilityDetails.eligible ? "eligible" : "not-eligible"}`}>
-                      {eligibilityDetails.eligible ? t('eligible') : t('notEligible')}
+                      {eligibilityDetails.eligible ? "Eligible" : "Not Eligible"}
                     </span>
                   </div>
                   
                   <div className="result-item">
-                    <span className="result-label">{t('maxAmount')}:</span>
+                    <span className="result-label">Max Amount:</span>
                     <span className="result-value">₹{eligibilityDetails.maxEligibleAmount.toLocaleString()}</span>
                   </div>
                   
                   <div className="result-item">
-                    <span className="result-label">{t('interestRate')}:</span>
+                    <span className="result-label">Interest Rate:</span>
                     <span className="result-value">{eligibilityDetails.suggestedInterestRate.toFixed(2)}%</span>
                   </div>
                 </div>
                 
                 {eligibilityDetails.reasons.length > 0 && (
                   <div className="result-section">
-                    <h4>{t('factors')}:</h4>
+                    <h4>Factors:</h4>
                     <ul>
                       {eligibilityDetails.reasons.map((reason, index) => (
                         <li key={index}>
@@ -734,7 +743,7 @@ const LoanEligibility = () => {
                 
                 {eligibilityDetails.recommendations.length > 0 && (
                   <div className="result-section">
-                    <h4>{t('recommendations')}:</h4>
+                    <h4>Recommendations:</h4>
                     <ul>
                       {eligibilityDetails.recommendations.map((recommendation, index) => (
                         <li key={index}>
@@ -747,7 +756,7 @@ const LoanEligibility = () => {
                 )}
                 
                 <div className="disclaimer">
-                  <p>{t('disclaimer')}</p>
+                  <p>This is an automated eligibility assessment. Please consult with your bank for final approval.</p>
                 </div>
                 
                 <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>

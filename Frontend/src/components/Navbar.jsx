@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   AppBar,
   Box,
@@ -44,6 +44,17 @@ const Navbar = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
   const { user, logout } = useAuth(); // Get user from context
+  const languageSelectorRef = useRef();
+
+  useEffect(() => {
+    const handler = () => {
+      if (languageSelectorRef.current && languageSelectorRef.current.openMenu) {
+        languageSelectorRef.current.openMenu();
+      }
+    };
+    window.addEventListener('open-language-selector', handler);
+    return () => window.removeEventListener('open-language-selector', handler);
+  }, []);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -134,7 +145,7 @@ const Navbar = () => {
             </Box>
           )}
           <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', gap: 2 }}>
-            <LanguageSelector />
+            <LanguageSelector ref={languageSelectorRef} />
             {user ? (
               <>
                 <Tooltip title="Open settings">

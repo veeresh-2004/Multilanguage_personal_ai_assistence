@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { CreditCard, DollarSign, User, Calendar, Home, Car, GraduationCap, Building } from "lucide-react";
-
+import { ArrowBackIos } from '@mui/icons-material';
 const LoanApplicationGuide = () => {
   const [step, setStep] = useState(0);
   const [banks, setBanks] = useState([]);
@@ -159,8 +159,9 @@ const LoanApplicationGuide = () => {
 
   return (
     
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen  bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+      <ArrowBackIos className="w-6 h-6 text-gray-600 mb-4 cursor-pointer" onClick={() => window.history.back()} />
+      <div className="max-w-10xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
@@ -196,6 +197,7 @@ const LoanApplicationGuide = () => {
                 animation: 'slideInUp 0.6s ease-out'
               }}
             >
+              <ArrowBackIos className="w-6 h-6 text-gray-600 mb-4 cursor-pointer" onClick={() => step > 0 && setStep(step - 1)} />
               {/* Icon and Question */}
               <div className="flex items-center justify-center mb-8">
                 <div className={`p-4 rounded-full bg-gradient-to-r ${questions[step].gradient} text-white shadow-lg transform transition-transform duration-300 hover:scale-110`}>
@@ -237,7 +239,7 @@ const LoanApplicationGuide = () => {
                   />
                 )}
               </div>
-
+              
               {/* Next Button */}
               <div className="text-center">
                 <button
