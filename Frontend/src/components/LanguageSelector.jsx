@@ -1,6 +1,6 @@
 import { Box, Button, IconButton, Menu, MenuItem } from "@mui/material";
 import { Language as LanguageIcon } from "@mui/icons-material";
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 const languages = [
   { code: "en", name: "English", nativeName: "English" },
@@ -12,9 +12,13 @@ const languages = [
   { code: "es", name: "Spanish", nativeName: "Español" },
 ];
 
-const LanguageSelector = ({ variant = "icon" }) => {
+const LanguageSelector = forwardRef(({ variant = "icon" }, ref) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentLanguage, setCurrentLanguage] = useState("en");
+
+  useImperativeHandle(ref, () => ({
+    openMenu: () => setAnchorEl(document.body), // or any element you want
+  }));
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -93,6 +97,6 @@ const LanguageSelector = ({ variant = "icon" }) => {
       </Menu>
     </Box>
   );
-};
+});
 
 export default LanguageSelector;

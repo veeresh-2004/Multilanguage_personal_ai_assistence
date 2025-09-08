@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Login from './components/login/Login';  // Update the import wherever you use it
 import Signup from './components/login/Signup';
-import LoanEligibility from './components/LoanEligibility';
+import LoanEligibility from './components/Loancards/LoanEligibility';
 import LoanApplicationGuide from './components/Loanfinder/LoanApplicationGuide';
 import FinancialTips from './components/FinancialTips';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -18,7 +18,10 @@ import LoanEligibledata from './components/dashboard/elements/LoanEligibledata';
 import Getknowloans from './components/dashboard/elements/Getknowloans';
 import LoanReviews from './components/dashboard/elements/LoanReviews';
 import Animate from './components/Lanucherdesign/Animate';
-
+import BankAccount from './components/Loancards/BankAccount ';
+import CreditScore from './components/Loancards/CreditScore ';
+import Employment from './components/Loancards/Employment';
+import LanguageSelector from './components/LanguageSelector';
 
 const theme = createTheme({
   palette: {
@@ -191,6 +194,12 @@ const AppContent = () => {
              <Route path="/bank-list" element={<Banklists />  } />
              <Route path="/Loan-info" element={<Getknowloans />  } />
               <Route path="/loan-reviews" element={<LoanReviews />  } />
+              <Route path="/BankAccount" element={<BankAccount/>  } />
+              <Route path="/CreditScore" element={<CreditScore  />  } />
+              <Route path="/Employment" element={<Employment  />  } />
+     
+
+            <Route path="/language" element={<LanguageSelector />} />
           </Routes>
           
         </Container>

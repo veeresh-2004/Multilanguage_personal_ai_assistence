@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -40,10 +39,11 @@ import {
   Send as SendIcon,
   Close as CloseIcon,
   ArrowForward as ArrowIcon,
+  ArrowBack,
 } from '@mui/icons-material';
+import TextSpeech from './TextToSpeech'; // adjust path if needed
 
 const FinancialTips = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [error, setError] = useState(null);
@@ -52,12 +52,21 @@ const FinancialTips = () => {
   const [chatMessage, setChatMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [hoveredFeature, setHoveredFeature] = useState(null);
+  const [speechText, setSpeechText] = useState('');
+  const [showVoiceDialog, setShowVoiceDialog] = useState(false);
 
   const handleFeatureClick = (feature) => {
     if (feature.key === 'chat') {
-      setShowChat(true);
-    } else if (feature.path) {
-      navigate(feature.path);
+      if (window.botpress && typeof window.botpress.open === 'function') {
+        window.botpress.open();
+      } else {
+        setError("Chatbot is not available. Please try again later.");
+      }
+    } else if (feature.key === 'voice') {
+      setSpeechText("Here is your personalized financial advice and tips. Start saving, budgeting, and investing wisely for a secure future! to Explore more about voice guidance,just tap on the voice icon on the website.");
+      setShowVoiceDialog(true);
+    } else if (feature.key === 'language') {
+     window.dispatchEvent(new Event('open-language-selector'));
     } else {
       setShowFeatureNotAvailable(true);
     }
@@ -80,7 +89,8 @@ const FinancialTips = () => {
       title: "AI Chat Assistant",
       description: "Get instant answers to your financial questions with our intelligent chatbot",
       key: 'chat',
-      color: '#1976d2'
+      color: '#1976d2',
+      path: '/chat',
     },
     {
       icon: <VoiceIcon fontSize="large" />,
@@ -102,7 +112,8 @@ const FinancialTips = () => {
       title: "Multi-Language",
       description: "Access all resources in your preferred language",
       key: 'language',
-      color: '#9c27b0'
+      color: '#9c27b0',
+      path:'/language',
     }
   ];
 
@@ -323,6 +334,7 @@ const FinancialTips = () => {
 
   return (
     <Container maxWidth="xl">
+      <ArrowBack className="w-6 h-6 text-gray-600 mb-4 cursor-pointer" onClick={() => window.history.back()} />
       <Box sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
@@ -395,7 +407,7 @@ const FinancialTips = () => {
                   key={index}
                   onMouseEnter={() => setHoveredFeature(index)}
                   onMouseLeave={() => setHoveredFeature(null)}
-                  onClick={() => handleFeatureClick(feature)} 
+                  onClick={() => handleFeatureClick(feature)}
                   sx={{
                     p: 3,
                     mb: 2,
@@ -690,36 +702,6 @@ const FinancialTips = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Feature Not Available Dialog */}
-      <Dialog
-        open={showFeatureNotAvailable}
-        onClose={() => setShowFeatureNotAvailable(false)}
-        maxWidth="sm"
-      >
-        <DialogContent sx={{ textAlign: 'center', p: 4 }}>
-          <AiIcon sx={{ fontSize: '4rem', color: 'primary.main', mb: 2 }} />
-          <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
-            Coming Soon!
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            This feature is currently under development and will be available soon. 
-            Stay tuned for exciting updates!
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setShowFeatureNotAvailable(false)}
-            sx={{ 
-              borderRadius: 3,
-              px: 3,
-              py: 1
-            }}
-          >
-            Got it
-          </Button>
-        </DialogContent>
-      </Dialog>
-
       {/* Error Snackbar */}
       <Snackbar
         open={!!error}
@@ -738,6 +720,34 @@ const FinancialTips = () => {
           {error}
         </Alert>
       </Snackbar>
+
+      {/* Text to Speech Component */}
+      {speechText && (
+        <TextSpeech text={speechText} onEnd={() => setSpeechText('')} />
+      )}
+
+      {/* Voice Guidance Dialog */}
+      <Dialog
+        open={showVoiceDialog}
+        onClose={() => setShowVoiceDialog(false)}
+        maxWidth="xs"
+      >
+        <DialogTitle>
+          <VoiceIcon sx={{ mr: 1, color: '#384edcff' }} />
+          Voice Guidance
+        </DialogTitle>
+        <DialogContent sx={{ textAlign: 'center', p: 3 }}>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            {speechText}
+          </Typography>
+          <TextSpeech text={speechText} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowVoiceDialog(false)} color="primary" variant="contained">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
