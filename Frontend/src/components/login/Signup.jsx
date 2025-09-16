@@ -15,7 +15,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
-
+import { ArrowBackIos } from '@mui/icons-material';
 const Signup = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -37,7 +37,9 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-const API_BASE = "https://loanplatform.onrender.com";  // declare it outside
+
+   const API_BASE = "https://loanplatform.onrender.com";  // declare it outside
+
 const handleSignup = async () => {
   try {
     const res = await fetch(`${API_BASE}/api/auth/register`, {
@@ -148,9 +150,11 @@ const handleSignup = async () => {
 
       {/* RIGHT SIDE */}
       <div className="w-full lg:w-1/2 bg-gray-50 flex items-center justify-center p-6 md:p-8">
-        <div className="w-full max-w-md">
+         <div className="w-full max-w-md">
           {/* Header */}
           <div className="text-center mb-8">
+            <span > <button className='text-gray-600 hover:text-gray-800' onClick={() => navigate('/')} > <ArrowBackIos/>Back To Home</button></span>
+     
             <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center mx-auto mb-4">
               <span className="text-4xl">🙋🏻‍♂️</span>
             </div>
