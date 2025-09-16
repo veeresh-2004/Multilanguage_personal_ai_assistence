@@ -8,7 +8,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 
 // point to your backend
-const API_BASE = "https://loanplatform.onrender.com/api/auth/register";
+const API_BASE = "https://loanplatform.onrender.com";
 
 
 const Login = () => {
