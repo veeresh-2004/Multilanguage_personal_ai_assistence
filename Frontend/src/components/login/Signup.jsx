@@ -34,7 +34,7 @@ const Signup = () => {
   // -------------------------
   // SUBMIT HANDLER
   // -------------------------
-  const API_BASE = "https://loanmate.onrender.com"; // Use your actual backend
+const API_BASE = "https://loanplatform.onrender.com"; // Use your actual backend
 
 const handleSubmit = async (e) => {
   e.preventDefault();
