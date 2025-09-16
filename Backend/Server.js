@@ -13,9 +13,9 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// allow frontend (React) to call backend
+// allow frontend (React) to casll backend
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: "https://loanmate-platform.vercel.app", // NO trailing slash!
   credentials: true
 }));
 

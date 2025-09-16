@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Filter, Building, DollarSign, MapPin, Calendar, TrendingUp } from 'lucide-react';
-
+import { ArrowBackIosNewSharp } from '@mui/icons-material';
 const LoanReviews = () => {
   const [reviews, setReviews] = useState([]);
   const [filteredReviews, setFilteredReviews] = useState([]);
@@ -82,6 +82,7 @@ const LoanReviews = () => {
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <ArrowBackIosNewSharp className="w-6 h-6 text-gray-600 mb-4 mt-5 cursor-pointer" onClick={() => window.history.back()}/>
       {/* Hero Header */}
       <div className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"2\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"}}></div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Database, CheckCircle, FileText, BarChart3 } from 'lucide-react';
-
+import { ArrowBackIosNewSharp } from '@mui/icons-material';
 
 const Dashboard = () => {
   const [selectedCard, setSelectedCard] = useState(null);
@@ -56,6 +56,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <ArrowBackIosNewSharp className="w-6 h-6 text-gray-600 mb-4 mt-5 cursor-pointer" onClick={() => window.history.back()}/>
       <div className="container mx-auto px-6 py-8 max-w-7xl">
         {/* Header */}
         <div className="mb-12">

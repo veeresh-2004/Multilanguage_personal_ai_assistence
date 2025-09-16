@@ -6,9 +6,10 @@ import { Container } from '@mui/material';
 
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
+import { ArrowBackIos } from '@mui/icons-material';
 
 // point to your backend
-const API_BASE = "http://localhost:5000";
+const API_BASE = "https://multilanguage-personal-ai-backend.onrender.com";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -142,12 +143,14 @@ const Login = () => {
                 <Building2 size={40} className="text-white" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900">FinMate</h1>
-              <p className="text-gray-600">Your trusted financial companion 💼✨</p>
-            </div>
+              <p className="text-gray-600">Your trusted financial companion 💼✨</p>   
+        </div>
 
             {/* Login Form */}
-            
+             
               <div className="text-center mb-8">
+                <span > <button className='text-gray-600 hover:text-gray-800' onClick={() => navigate('/')} > <ArrowBackIos/>Back To Home</button></span>
+
                 <div className="text-4xl mb-4 animate-pulse">🏦</div>
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
                   Welcome Back
@@ -233,7 +236,7 @@ const Login = () => {
                 >
                   <span className="relative z-10">Sign In to FinMate 🚀</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                </button>
+                 </button>
               </form>
 
               {/* Footer Links */}

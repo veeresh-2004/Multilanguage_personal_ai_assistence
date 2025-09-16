@@ -42,7 +42,7 @@ import {
   ArrowBack,
 } from '@mui/icons-material';
 import TextSpeech from './TextToSpeech'; // adjust path if needed
-
+import { ArrowBackIosNewSharp } from '@mui/icons-material';
 const FinancialTips = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
@@ -334,8 +334,8 @@ const FinancialTips = () => {
 
   return (
     <Container maxWidth="xl">
-      <ArrowBack className="w-6 h-6 text-gray-600 mb-4 cursor-pointer" onClick={() => window.history.back()} />
-      <Box sx={{ py: 4 }}>
+     <ArrowBackIosNewSharp className="w-6 h-6 text-gray-600 mb-4 mt-5 cursor-pointer" onClick={() => window.history.back()}/>
+            <Box sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography 
@@ -535,7 +535,7 @@ const FinancialTips = () => {
                       color: 'text.secondary',
                       '&:hover': {
                         color: 'primary.main',
-                        bgcolor: 'primary.main',
+                        bgcolor: 'gray.100',
                         '& .MuiSvgIcon-root': {
                           transform: 'scale(1.1)',
                         }
@@ -543,7 +543,7 @@ const FinancialTips = () => {
                       '&.Mui-selected': {
                         fontWeight: 600,
                         color: 'primary.main',
-                        bgcolor: 'primary.main',
+                        bgcolor: 'yellow.50',
                       },
                     },
                     '& .MuiTabs-indicator': {
@@ -599,7 +599,7 @@ const FinancialTips = () => {
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center',
-          background: 'linear-gradient(135deg, #1976d2, #42a5f5)',
+          background: 'linear-gradient(135deg, #0d0d0eff, #42a5f5)',
           color: 'white',
           py: 2
         }}>

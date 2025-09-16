@@ -16,6 +16,7 @@ import {
   ArrowForward as ArrowIcon,
   NavigateNext as NextIcon,
   CreditScore,
+  ArrowBackIosNewSharp,
 } from '@mui/icons-material';
 
 // MUI Components
@@ -306,6 +307,7 @@ const LoanEligibility = () => {
 
   return (
     <Container maxWidth="xl" className="loan-eligibility-container cursor-pointer">
+     <ArrowBackIosNewSharp className="w-6 h-6 text-gray-600 mb-4 mt-5 cursor-pointer" onClick={() => window.history.back()}/>
       {/* Eligibility Criteria Cards Section */}
       {!showForm && (
         <Box sx={{ py: 4 }}>

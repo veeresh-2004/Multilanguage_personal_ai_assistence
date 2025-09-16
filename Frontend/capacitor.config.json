@@ -1,0 +1,12 @@
+{
+  "appId": "com.veer.loanmate",
+  "appName": "loanMate",
+  "webDir": "dist",
+  "plugins": {
+    "GoogleAuth": {
+      "scopes": ["profile", "email"],
+      "serverClientId": "647252430171-a6mp66u76evo6ocgnea979a146kmo4v3.apps.googleusercontent.com",      "forceCodeForRefreshToken": true
+    }
+  }
+}
+

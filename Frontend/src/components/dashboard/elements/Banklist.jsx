@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, TrendingUp, Building2, ExternalLink, Star, Filter, Loader, Award, Users, CreditCard, Calendar, IndianRupee, CheckCircle, ArrowLeft, Calculator } from 'lucide-react';
-
+import { ArrowBackIosNewSharp } from '@mui/icons-material';
 const PersonalLoansDashboard = () => {
   const [loanData, setLoanData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -189,6 +189,8 @@ const PersonalLoansDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 pt-16">
+      <ArrowBackIosNewSharp className="w-6 h-6 text-gray-600 mb-4 mt-5 cursor-pointer" onClick={() => window.history.back()}/>
+    
       {/* Add `pt-16` to ensure content starts below the Navbar */}
       {/* Header */}
       <div className="bg-white/90 backdrop-blur-md border-b border-white/20 sticky top-0 z-10 shadow-lg reset-header">
