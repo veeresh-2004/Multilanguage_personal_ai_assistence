@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, Box } from '@mui/material';
+import { Capacitor } from '@capacitor/core';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Login from './components/login/Login';
@@ -38,7 +39,7 @@ const theme = createTheme({
   components: {
     MuiButton: {
       styleOverrides: {
-        root: { borderRadius: '8px', textTransform: 'none', padding: '8px 16px' },
+        root: { borderRadius: '8px', textTransform: 'none', padding: '8px 8px' },
         contained: {
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
           '&:hover': { boxShadow: '0 6px 10px rgba(0, 0, 0, 0.15)' },
@@ -60,7 +61,7 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// AppContent
+// AppContent with safe area support
 const AppContent = () => {
   const location = useLocation();
   const hideNavbarRoutes = ["/login", "/signup", "/forgot-password"];
@@ -82,6 +83,8 @@ const AppContent = () => {
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%)',
         position: 'relative',
+        // ✅ Remove paddingTop to eliminate gap
+        marginTop: 0,
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -104,7 +107,6 @@ const AppContent = () => {
           zIndex: 1,
         }}
       >
-        {/* 🔥 Replaced MUI Container with Tailwind wrapper */}
         <div className="w-full max-w-[1280px] px-2 sm:px-4 mx-auto">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -134,13 +136,49 @@ const AppContent = () => {
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const [statusBarConfigured, setStatusBarConfigured] = useState(false);
 
+  // ✅ Configure StatusBar FIRST, before anything else
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
+    const configureStatusBar = async () => {
+      if (Capacitor.isNativePlatform()) {
+        try {
+          const { StatusBar, Style } = await import('@capacitor/status-bar');
+          
+          // Configure status bar IMMEDIATELY
+          await StatusBar.setOverlaysWebView({ overlay: false });
+          await StatusBar.setBackgroundColor({ color: '#1976d2' });
+          await StatusBar.setStyle({ style: Style.Light });
+          await StatusBar.show();
+          
+          console.log('StatusBar configured successfully');
+          setStatusBarConfigured(true);
+        } catch (error) {
+          console.error('StatusBar configuration error:', error);
+          setStatusBarConfigured(true); // Continue even if statusbar fails
+        }
+      } else {
+        setStatusBarConfigured(true);
+      }
+    };
+
+    configureStatusBar();
   }, []);
 
-  if (loading) return <Animate />;
+  // ✅ Only start loading timer AFTER status bar is configured
+  useEffect(() => {
+    if (statusBarConfigured) {
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [statusBarConfigured]);
+
+  // Don't render anything until status bar is configured
+  if (!statusBarConfigured || loading) {
+    return <Animate />;
+  }
 
   return (
     <ErrorBoundary>

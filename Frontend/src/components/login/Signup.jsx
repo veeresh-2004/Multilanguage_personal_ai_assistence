@@ -34,28 +34,50 @@ const Signup = () => {
   // -------------------------
   // SUBMIT HANDLER
   // -------------------------
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  const API_BASE = "https://loanplatform.onrender.com";  // declare it outside
 
-    try {
-      const res = await fetch("https://multilanguage-personal-ai-backend.onrender.com/api/auth/register", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+const handleSignup = async () => {
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/register`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Signup failed.");
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Signup failed.");
 
-      // assuming backend returns { user, token }
-      login(data.user, data.token);
-      navigate("/Dashboard");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+    // assuming backend returns { user, token }
+    login(data.user, data.token);
+    navigate("/Dashboard");
+  } catch (err) {
+    setError(err.message);
+  }
+};
+; // Use your actual backend
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/register`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Signup failed.");
+
+    // assuming backend returns { user, token }
+    login(data.user, data.token);
+    navigate("/Dashboard");
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
   // -------------------------
   // GOOGLE LOGIN

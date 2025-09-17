@@ -11,12 +11,35 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #325eef;
+  background-color: #1976d2; /* ✅ Match status bar color */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ✅ Ensure proper viewport handling */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #1976d2; /* ✅ Match status bar color */
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+/* ✅ Add support for safe areas */
+#root {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #1976d2; /* ✅ Match status bar color */
 }
 
 a {
@@ -26,17 +49,6 @@ a {
 }
 a:hover {
   color: #535bf2;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;   /* stack children vertically */
-  align-items: stretch;     /* children take full width */
-  justify-content: flex-start; /* no vertical centering */
-  padding: 0px 0px  0px 0px;
 }
 
 h1 {
@@ -66,7 +78,7 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: #1976d2; /* ✅ Keep blue background */
   }
   a:hover {
     color: #747bff;
@@ -74,5 +86,10 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* For Capacitor apps, ensure proper viewport handling */
+.capacitor-app {
+  background-color: #1976d2; /* ✅ Match status bar color */
 }
 

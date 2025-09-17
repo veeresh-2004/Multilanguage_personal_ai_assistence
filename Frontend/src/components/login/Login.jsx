@@ -9,7 +9,7 @@ import { jwtDecode } from "jwt-decode";
 import { ArrowBackIos } from '@mui/icons-material';
 
 // point to your backend
-const API_BASE = "https://multilanguage-personal-ai-backend.onrender.com";
+const API_BASE = "https://loanplatform.onrender.com";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });

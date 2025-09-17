@@ -1,0 +1,12 @@
+.navbar {
+  display: flex;
+  justify-content: space-between; /* Spread items */
+  align-items: center;           /* Vertical alignment */
+  padding: 10px 16px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 12px; /* Adds spacing between items */
+  align-items: center;
+}
