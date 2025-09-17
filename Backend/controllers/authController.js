@@ -21,7 +21,11 @@ export const register = async (req, res, next) => {
     const user = await User.create({ name, email, password: hashed });
 
     const token = signToken(user._id);
-    res.cookie("token", token, { httpOnly: true, sameSite: "lax" });
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "none", // <-- for cross-origin
+      secure: true,      // <-- required for "none"
+    });
 
     res.status(201).json({
       user: { _id: user._id, name: user.name, email: user.email },
@@ -46,7 +50,11 @@ export const login = async (req, res, next) => {
     }
 
     const token = signToken(user._id);
-    res.cookie("token", token, { httpOnly: true, sameSite: "lax" });
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "none", // <-- for cross-origin
+      secure: true,      // <-- required for "none"
+    });
 
     res.json({
       user: { _id: user._id, name: user.name, email: user.email },
