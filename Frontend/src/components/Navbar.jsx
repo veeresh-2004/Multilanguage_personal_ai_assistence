@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import '../styles/Navbar.css';
+import '../styles/navbar.css';
 import {
   AppBar,
   Box,
