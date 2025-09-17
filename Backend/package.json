@@ -1,20 +1,23 @@
 {
-  "name": "loanmate-backend",
+  "name": "backend",
   "version": "1.0.0",
-  "main": "Server.js",
   "type": "module",
-  "main": "server.js",
+  "main": "Server.js",
   "scripts": {
     "start": "node Server.js",
     "dev": "nodemon Server.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "mongoose": "^8.0.0",
-    "dotenv": "^16.4.0",
-    "cors": "^2.8.5",
-    "cookie-parser": "^1.4.6",
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2"
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.6.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }
