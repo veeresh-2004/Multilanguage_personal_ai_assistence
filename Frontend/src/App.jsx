@@ -24,6 +24,7 @@ import CreditScore from './components/Loancards/CreditScore ';
 import Employment from './components/Loancards/Employment';
 import LanguageSelector from './components/LanguageSelector';
 import Footer from './components/Footer';
+
 const theme = createTheme({
   palette: {
     primary: { main: '#1976d2', light: '#42a5f5', dark: '#1565c0' },
@@ -64,7 +65,13 @@ const ProtectedRoute = ({ children }) => {
 // AppContent with safe area support
 const AppContent = () => {
   const location = useLocation();
-  const hideNavbarRoutes = ["/login", "/signup", "/forgot-password"];
+  
+  // ✅ Define routes where Footer should be hidden
+  const hideFooterRoutes = ['/login', '/signup'];
+  const shouldHideFooter = hideFooterRoutes.includes(location.pathname);
+  
+  // ✅ Define routes where Navbar should be hidden (if needed)
+  const hideNavbarRoutes = ['/login', '/signup'];
   const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
 
   useEffect(() => {
@@ -83,7 +90,6 @@ const AppContent = () => {
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%)',
         position: 'relative',
-        // ✅ Remove paddingTop to eliminate gap
         marginTop: 0,
         '&::before': {
           content: '""',
@@ -97,7 +103,9 @@ const AppContent = () => {
         },
       }}
     >
+      {/* Conditionally render Navbar */}
       {!shouldHideNavbar && <Navbar />}
+      
       <Box
         component="main"
         sx={{
@@ -128,25 +136,45 @@ const AppContent = () => {
             <Route path="/Employment" element={<Employment />} />
             <Route path="/language" element={<LanguageSelector />} />
           </Routes>
-          <Footer></Footer>
         </div>
       </Box>
+      
+      {/* ✅ Conditionally render Footer */}
+      {!shouldHideFooter && <Footer />}
     </Box>
   );
 };
 
 function App() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // ✅ Default to false
   const [statusBarConfigured, setStatusBarConfigured] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false); // ✅ New state for animation
 
-  // ✅ Configure StatusBar FIRST, before anything else
+  // ✅ Check if animation should be shown (only first visit)
+  useEffect(() => {
+    const hasSeenAnimation = localStorage.getItem('loanmate_animation_shown');
+    
+    if (!hasSeenAnimation) {
+      // First time visitor - show animation
+      setShowAnimation(true);
+      setLoading(true);
+      
+      // Mark animation as shown
+      localStorage.setItem('loanmate_animation_shown', 'true');
+    } else {
+      // Returning visitor - skip animation
+      setShowAnimation(false);
+      setLoading(false);
+    }
+  }, []);
+
+  // ✅ Configure StatusBar
   useEffect(() => {
     const configureStatusBar = async () => {
       if (Capacitor.isNativePlatform()) {
         try {
           const { StatusBar, Style } = await import('@capacitor/status-bar');
           
-          // Configure status bar IMMEDIATELY
           await StatusBar.setOverlaysWebView({ overlay: false });
           await StatusBar.setBackgroundColor({ color: '#1976d2' });
           await StatusBar.setStyle({ style: Style.Light });
@@ -156,7 +184,7 @@ function App() {
           setStatusBarConfigured(true);
         } catch (error) {
           console.error('StatusBar configuration error:', error);
-          setStatusBarConfigured(true); // Continue even if statusbar fails
+          setStatusBarConfigured(true);
         }
       } else {
         setStatusBarConfigured(true);
@@ -166,18 +194,18 @@ function App() {
     configureStatusBar();
   }, []);
 
-  // ✅ Only start loading timer AFTER status bar is configured
+  // ✅ Animation timer - only runs if showAnimation is true
   useEffect(() => {
-    if (statusBarConfigured) {
+    if (showAnimation && statusBarConfigured) {
       const timer = setTimeout(() => {
         setLoading(false);
-      }, 1000);
+      }, 3000); // Animation duration
       return () => clearTimeout(timer);
     }
-  }, [statusBarConfigured]);
+  }, [showAnimation, statusBarConfigured]);
 
-  // Don't render anything until status bar is configured
-  if (!statusBarConfigured || loading) {
+  // ✅ Show animation only for first-time visitors
+  if (showAnimation && (loading || !statusBarConfigured)) {
     return <Animate />;
   }
 
