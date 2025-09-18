@@ -308,26 +308,40 @@ const Home = () => {
     setContactError('');
     setContactSuccess('');
 
+    // Basic validation
+    if (!contactForm.name.trim() || !contactForm.email.trim() || !contactForm.message.trim()) {
+      setContactError('Please fill in all fields');
+      setContactLoading(false);
+      return;
+    }
+
     try {
+      console.log('🚀 Submitting contact form:', contactForm);
+      
       const response = await fetch('https://loanplatform.onrender.com/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify(contactForm),
       });
 
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+
       const data = await response.json();
+      console.log('📦 Response data:', data);
 
       if (data.success) {
         setContactSuccess(data.message);
         setContactForm({ name: '', email: '', message: '' });
       } else {
-        setContactError(data.message || 'Failed to send message');
+        setContactError(data.message || `Server error: ${response.status}`);
       }
     } catch (error) {
-      console.error('Contact form error:', error);
-      setContactError('Failed to send message. Please try again.');
+      console.error('❌ Contact form error:', error);
+      setContactError(`Network error: ${error.message}`);
     } finally {
       setContactLoading(false);
     }

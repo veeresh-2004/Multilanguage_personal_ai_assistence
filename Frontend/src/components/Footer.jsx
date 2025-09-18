@@ -61,13 +61,13 @@ const Footer = () => {
               <FaWhatsapp />
             </a>
             <a 
-              href="mailto:support@loanmate.com"
+              href="mailto:veereshhedderi18@gmail.com"
               className="hover:text-red-500 transition-colors"
             >
               <MdEmail />
             </a>
             <a 
-              href="tel:+911234567890"
+              href="tel:+918880717978"
               className="hover:text-yellow-400 transition-colors"
             >
               <MdPhone />
@@ -86,11 +86,11 @@ const Footer = () => {
           <div className="mt-4 text-sm text-gray-300">
             <p className="flex items-center gap-2">
               <MdEmail className="text-lg" />
-              support@loanmate.com
+              veereshhedderi18gmail.com
             </p>
             <p className="flex items-center gap-2 mt-1">
               <MdPhone className="text-lg" />
-              +91 123 456 7890
+              +91 888-071-7978
             </p>
           </div>
         </div>
