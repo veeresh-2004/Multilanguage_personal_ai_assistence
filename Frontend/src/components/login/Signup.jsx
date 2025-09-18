@@ -57,7 +57,7 @@ const Signup = () => {
       if (!res.ok) throw new Error(data.message || "Signup failed.");
 
       login(data.user, data.token);
-      navigate("/Dashboard");
+      navigate("/");
     } catch (err) {
       setError(err.message);
     }

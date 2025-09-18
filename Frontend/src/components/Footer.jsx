@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Linkedin, MessageCircle, Github, Twitter, Facebook, Mail, Phone, MapPin, Send, ChevronUp } from "lucide-react";
+import { Instagram } from "@mui/icons-material";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -166,11 +167,10 @@ const Footer = () => {
                 <p className="text-sm text-gray-600 mb-3">Follow us on social media</p>
                 <div className="flex gap-3">
                   {[
-                    { icon: Linkedin, href: "https://linkedin.com/in/your-profile", color: "hover:text-blue-600" },
-                    { icon: MessageCircle, href: "https://wa.me/8880717978", color: "hover:text-green-500" },
-                    { icon: Github, href: "https://github.com/your-github", color: "hover:text-gray-700" },
-                    { icon: Twitter, href: "https://twitter.com/your-profile", color: "hover:text-blue-400" },
-                    { icon: Facebook, href: "https://facebook.com/your-profile", color: "hover:text-blue-700" }
+                    { icon: Linkedin, href: "https://www.linkedin.com/in/veeresh-hedderi-83838525b", color: "hover:text-blue-600" },
+                    { icon: MessageCircle, href: "https://wa.me/+918880717978", color: "hover:text-green-500" },
+                    { icon: Github, href: "https://github.com/Veer212004/Multilanguage_personal_ai_assistence", color: "hover:text-gray-700" },
+                    { icon: Instagram, href: "https://instagram.com/smart_soul_veer", color: "hover:text-blue-700" }
                   ].map((social, index) => {
                     const IconComponent = social.icon;
                     return (
@@ -194,7 +194,7 @@ const Footer = () => {
           <div className="border-t border-gray-200 mt-12 pt-8 px-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="text-sm text-gray-600 text-center md:text-left">
-                <p>© {new Date().getFullYear()} LoanMate. All rights reserved. | Built with ❤️ for better financial decisions</p>
+                <p>© {new Date().getFullYear()} LoanMate. All rights reserved. | Built with ❤️ for better financial decisions , Created By Veeresh</p>
               </div>
               <div className="flex flex-wrap gap-6 text-sm">
                 {[
