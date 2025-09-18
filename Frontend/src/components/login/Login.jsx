@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Building2, TrendingUp, Shield, Zap } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -7,6 +7,10 @@ import { Container } from '@mui/material';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 import { ArrowBackIos } from '@mui/icons-material';
+
+// ✅ Add Capacitor imports
+import { Capacitor } from '@capacitor/core';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 // point to your backend
 const API_BASE = "https://loanplatform.onrender.com";
@@ -17,6 +21,13 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  // ✅ Initialize Google Auth for native platforms
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      GoogleAuth.initialize();
+    }
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,7 +42,7 @@ const Login = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-        credentials: "include",   // keeps cookies if you use them later
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -39,16 +50,53 @@ const Login = () => {
         throw new Error(msg);
       }
 
-      const data = await res.json(); // { user, token }
-      login(data.user, data.token);  // your AuthContext
-
+      const data = await res.json();
+      login(data.user, data.token);
       navigate('/');
     } catch (err) {
       setError(err.message || "Invalid email or password");
     }
   };
 
-  // ✅ existing Google handler unchanged
+  // ✅ Native Google login for Capacitor
+  const handleNativeGoogleLogin = async () => {
+    try {
+      const result = await GoogleAuth.signIn();
+      
+      // Send the token to your backend for verification
+      const res = await fetch(`${API_BASE}/api/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token: result.authentication.idToken,
+          email: result.email,
+          name: result.name,
+          picture: result.imageUrl
+        }),
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        login(data.user, data.token);
+        navigate('/');
+      } else {
+        // Fallback: login with Google data directly
+        const userData = {
+          email: result.email,
+          name: result.name,
+          picture: result.imageUrl,
+        };
+        login(userData, result.authentication.idToken || 'google-token');
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Native Google login error:', error);
+      setError('Google login failed. Please try again.');
+    }
+  };
+
+  // ✅ Web Google login (unchanged)
   const handleGoogleSuccess = (credentialResponse) => {
     try {
       const decoded = jwtDecode(credentialResponse.credential);
@@ -66,20 +114,18 @@ const Login = () => {
 
   const handleGoogleFailure = () => setError('Google login was unsuccessful. Try again.');
 
- 
-
   return (
     <Container
       maxWidth="lg"
       sx={{
-        padding:0, // Remove padding on all sides
+        padding:0,
         '@media (min-width: 600px)': {
-          padding: 0, // Ensure no padding for screens wider than 600px
+          padding: 0,
         },
       }}
     >
       <div className="min-h-screen flex">
-        {/* Left Side - Hero Section */}
+        {/* Left Side - Hero Section (unchanged) */}
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-white-500 to-blue-500 relative overflow-hidden">
           {/* Animated Background Elements */}
           <div className="absolute inset-0">
@@ -112,7 +158,7 @@ const Login = () => {
                 Unlock Your Financial Future
               </h1>
               <p className="text-xl text-blue-100 leading-relaxed max-w-md">
-                Get instant loans  tips with competitive rates and flexible terms. Your dreams are just one click away.
+                Get instant loans tips with competitive rates and flexible terms. Your dreams are just one click away.
               </p>
             </div>
             
@@ -144,7 +190,7 @@ const Login = () => {
               </div>
               <h1 className="text-2xl font-bold text-gray-900">FinMate</h1>
               <p className="text-gray-600">Your trusted financial companion 💼✨</p>   
-        </div>
+            </div>
 
             {/* Login Form */}
              
@@ -167,13 +213,25 @@ const Login = () => {
                 </div>
               )}
 
-              {/* Google Login */}
+              {/* ✅ Google Login - shows different button based on platform */}
               <div className="mb-6">
                 <div className="flex justify-center transform transition-all duration-300 hover:-translate-y-1 hover:scale-105">
-                  <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    onError={handleGoogleFailure}
-                  />
+                  {Capacitor.isNativePlatform() ? (
+                    // Native Google login button for mobile
+                    <button
+                      onClick={handleNativeGoogleLogin}
+                      className="flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-lg px-6 py-3 font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" className="w-5 h-5" />
+                      Sign in with Google
+                    </button>
+                  ) : (
+                    // Web Google login for browser
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={handleGoogleFailure}
+                    />
+                  )}
                 </div>
               </div>
 

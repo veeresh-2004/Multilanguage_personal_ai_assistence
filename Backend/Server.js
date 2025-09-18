@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/authRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(cors({
 
 app.get("/", (req, res) => res.send("API running"));
 app.use("/api/auth", authRoutes);
+app.use("/api/contact", contactRoutes);
 app.use(errorHandler);
 
 mongoose.connect(process.env.MONGO_URI)

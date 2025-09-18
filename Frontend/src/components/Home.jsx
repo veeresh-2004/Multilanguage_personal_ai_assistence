@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { CircularProgress } from '@mui/material';
 import { 
   Box, 
   Typography, 
@@ -156,6 +157,8 @@ const StatCard = ({ icon: Icon, value, label, color, delay }) => {
 const Feature = ({ icon, title, description, delay }) => {
   const theme = useTheme();
   const IconComponent = icon;
+
+
   
   return (
     <Zoom in={true} style={{ transitionDelay: delay }}>
@@ -266,6 +269,16 @@ const Home = () => {
   const navigate = useNavigate();
   const theme = useTheme();
 
+  // All useState declarations should be here, inside the component
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [contactLoading, setContactLoading] = useState(false);
+  const [contactSuccess, setContactSuccess] = useState('');
+  const [contactError, setContactError] = useState('');
+
   // Loan Process State
   const [activeStep, setActiveStep] = useState(0);
   
@@ -279,6 +292,46 @@ const Home = () => {
   
   // Features Gallery State
   const [selectedTab, setSelectedTab] = useState(0);
+
+  // Handle contact form changes
+  const handleContactChange = (e) => {
+    setContactForm({
+      ...contactForm,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // Handle contact form submission
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    setContactLoading(true);
+    setContactError('');
+    setContactSuccess('');
+
+    try {
+      const response = await fetch('https://loanplatform.onrender.com/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactForm),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setContactSuccess(data.message);
+        setContactForm({ name: '', email: '', message: '' });
+      } else {
+        setContactError(data.message || 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      setContactError('Failed to send message. Please try again.');
+    } finally {
+      setContactLoading(false);
+    }
+  };
 
   // EMI Calculation Effect
   useEffect(() => {
@@ -1036,110 +1089,126 @@ const Home = () => {
         </Container>
       </Box>
 
-      {/* Contact Section */}
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Grid container spacing={4} alignItems="center">
-          <Grid item xs={12} md={6}>
-            <Typography variant="h2" gutterBottom>
-              Need Personal Assistance?
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Our team of financial experts is here to help you with any questions about loans, eligibility, or the application process.
-            </Typography>
-            <Box sx={{ mb: 4 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<PhoneIcon />}
-                sx={{ mr: 2, mb: 2 }}
-              >
-                Schedule a Call
-              </Button>
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<EmailIcon />}
-                sx={{ mb: 2 }}
-              >
-                Email Support
-              </Button>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <IconButton color="primary" component={Link} href="#" target="_blank">
-                <FacebookIcon />
-              </IconButton>
-              <IconButton color="primary" component={Link} href="#" target="_blank">
-                <TwitterIcon />
-              </IconButton>
-              <IconButton color="primary" component={Link} href="#" target="_blank">
-                <LinkedInIcon />
-              </IconButton>
-              <IconButton color="primary" component={Link} href="#" target="_blank">
-                <InstagramIcon />
-              </IconButton>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Card
+     {/* Contact Section - Updated Form */}
+<Container maxWidth="lg" sx={{ py: 8 }}>
+  <Grid container spacing={4} alignItems="center">
+    <Grid item xs={12} md={6}>
+      {/* ... existing content ... */}
+    </Grid>
+    <Grid item xs={12} md={6}>
+      <Card
+        sx={{
+          p: 3,
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+          borderRadius: '16px',
+        }}
+      >
+        {/* Success Message */}
+        {contactSuccess && (
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="body1"
               sx={{
-                p: 3,
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-                borderRadius: '16px',
+                p: 2,
+                bgcolor: 'success.light',
+                color: 'success.contrastText',
+                borderRadius: '8px',
+                textAlign: 'center'
               }}
             >
-              <form>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Your Name"
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Your Email"
-                      variant="outlined"
-                      type="email"
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="How can we help you?"
-                      variant="outlined"
-                      multiline
-                      rows={4}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      color="primary"
-                      size="large"
-                      startIcon={<SendIcon />}
-                      sx={{
-                        height: 56,
-                        borderRadius: '8px',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 8px 20px rgba(21, 101, 192, 0.3)',
-                        },
-                      }}
-                    >
-                      Send Message
-                    </Button>
-                  </Grid>
-                </Grid>
-              </form>
-            </Card>
+              {contactSuccess}
+            </Typography>
+          </Box>
+        )}
+
+        {/* Error Message */}
+        {contactError && (
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="body1"
+              sx={{
+                p: 2,
+                bgcolor: 'error.light',
+                color: 'error.contrastText',
+                borderRadius: '8px',
+                textAlign: 'center'
+              }}
+            >
+              {contactError}
+            </Typography>
+          </Box>
+        )}
+
+        <form onSubmit={handleContactSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Your Name"
+                name="name"
+                value={contactForm.name}
+                onChange={handleContactChange}
+                variant="outlined"
+                required
+                disabled={contactLoading}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Your Email"
+                name="email"
+                value={contactForm.email}
+                onChange={handleContactChange}
+                variant="outlined"
+                type="email"
+                required
+                disabled={contactLoading}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="How can we help you?"
+                name="message"
+                value={contactForm.message}
+                onChange={handleContactChange}
+                variant="outlined"
+                multiline
+                rows={4}
+                required
+                disabled={contactLoading}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                size="large"
+                type="submit"
+                disabled={contactLoading}
+                startIcon={contactLoading ? <CircularProgress size={20} color="inherit" /> : <SendIcon />}
+                sx={{
+                  height: 56,
+                  borderRadius: '8px',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: contactLoading ? 'none' : 'translateY(-2px)',
+                    boxShadow: contactLoading ? 'none' : '0 8px 20px rgba(21, 101, 192, 0.3)',
+                  },
+                }}
+              >
+                {contactLoading ? 'Sending...' : 'Send Message'}
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
-    </Box>
+        </form>
+      </Card>
+    </Grid>
+  </Grid>
+</Container>
+</Box>
   );
 };
 

@@ -23,7 +23,7 @@ import BankAccount from './components/Loancards/BankAccount ';
 import CreditScore from './components/Loancards/CreditScore ';
 import Employment from './components/Loancards/Employment';
 import LanguageSelector from './components/LanguageSelector';
-
+import Footer from './components/Footer';
 const theme = createTheme({
   palette: {
     primary: { main: '#1976d2', light: '#42a5f5', dark: '#1565c0' },
@@ -128,6 +128,7 @@ const AppContent = () => {
             <Route path="/Employment" element={<Employment />} />
             <Route path="/language" element={<LanguageSelector />} />
           </Routes>
+          <Footer></Footer>
         </div>
       </Box>
     </Box>
