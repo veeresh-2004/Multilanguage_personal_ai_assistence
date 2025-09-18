@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Eye,
   EyeOff,
@@ -15,6 +15,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import { ArrowBackIos } from '@mui/icons-material';
+
+// ✅ Add Capacitor imports
+import { Capacitor } from '@capacitor/core';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+
+const API_BASE = "https://loanplatform.onrender.com";
 
 const Signup = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
@@ -24,22 +31,22 @@ const Signup = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // -------------------------
-  // INPUT HANDLERS
-  // -------------------------
+  // ✅ Initialize Google Auth for native platforms
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      GoogleAuth.initialize();
+    }
+  }, []);
+
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // -------------------------
-  // SUBMIT HANDLER
-  // -------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -49,7 +56,6 @@ const Signup = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Signup failed.");
 
-      // assuming backend returns { user, token }
       login(data.user, data.token);
       navigate("/Dashboard");
     } catch (err) {
@@ -57,9 +63,45 @@ const Signup = () => {
     }
   };
 
-  // -------------------------
-  // GOOGLE LOGIN
-  // -------------------------
+  // ✅ Native Google signup for Capacitor
+  const handleNativeGoogleSignup = async () => {
+    try {
+      const result = await GoogleAuth.signIn();
+      
+      // Send the token to your backend for verification
+      const res = await fetch(`${API_BASE}/api/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token: result.authentication.idToken,
+          email: result.email,
+          name: result.name,
+          picture: result.imageUrl
+        }),
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        login(data.user, data.token);
+        navigate("/Dashboard");
+      } else {
+        // Fallback: signup with Google data directly
+        const userData = {
+          email: result.email,
+          name: result.name,
+          picture: result.imageUrl,
+        };
+        login(userData, result.authentication.idToken || "google-signup-token");
+        navigate("/Dashboard");
+      }
+    } catch (error) {
+      console.error('Native Google signup error:', error);
+      setError('Google signup failed. Please try again.');
+    }
+  };
+
+  // ✅ Web Google signup (unchanged)
   const handleGoogleSuccess = (credentialResponse) => {
     try {
       const decoded = jwtDecode(credentialResponse.credential);
@@ -149,6 +191,8 @@ const Signup = () => {
         <div className="w-full max-w-md">
           {/* Header */}
           <div className="text-center mb-8">
+            <span > <button className='text-gray-600 hover:text-gray-800' onClick={() => navigate('/')} > <ArrowBackIos/>Back To Home</button></span>
+     
             <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center mx-auto mb-4">
               <span className="text-4xl">🙋🏻‍♂️</span>
             </div>
@@ -164,9 +208,21 @@ const Signup = () => {
             </div>
           )}
 
-          {/* Google Login */}
+          {/* ✅ Google Signup - shows different button based on platform */}
           <div className="flex justify-center mb-6">
-            <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
+            {Capacitor.isNativePlatform() ? (
+              // Native Google signup button for mobile
+              <button
+                onClick={handleNativeGoogleSignup}
+                className="flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-lg px-6 py-3 font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" className="w-5 h-5" />
+                Sign up with Google
+              </button>
+            ) : (
+              // Web Google signup for browser
+              <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
+            )}
           </div>
 
           {/* Divider */}

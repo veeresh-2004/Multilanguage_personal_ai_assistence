@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/authRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
@@ -13,14 +14,15 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// allow frontend (React) to call backend
+// allow frontend (React) to casll backend
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: "https://loanmate-platform.vercel.app", // NO trailing slash!
   credentials: true
 }));
 
 app.get("/", (req, res) => res.send("API running"));
 app.use("/api/auth", authRoutes);
+app.use("/api/contact", contactRoutes);
 app.use(errorHandler);
 
 mongoose.connect(process.env.MONGO_URI)

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import '../styles/navbar.css';
 import {
   AppBar,
   Box,
@@ -22,8 +23,6 @@ import {
 import {
   Menu as MenuIcon,
   Assessment as AssessmentIcon,
-  Description as DescriptionIcon,
-  Lightbulb as TipsIcon,
   AccountCircle as AccountIcon,
   Login as LoginIcon,
   PersonAdd as SignupIcon,
@@ -34,7 +33,7 @@ import GridViewTwoToneIcon from '@mui/icons-material/GridViewTwoTone';
 import TipsAndUpdatesTwoToneIcon from '@mui/icons-material/TipsAndUpdatesTwoTone';
 import TravelExploreTwoToneIcon from '@mui/icons-material/TravelExploreTwoTone';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Import the updated useAuth context
+import { useAuth } from '../context/AuthContext'; 
 import LanguageSelector from './LanguageSelector';
 
 const Navbar = () => {
@@ -43,7 +42,7 @@ const Navbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
-  const { user, logout } = useAuth(); // Get user from context
+  const { user, logout } = useAuth(); 
   const languageSelectorRef = useRef();
 
   useEffect(() => {
@@ -74,8 +73,6 @@ const Navbar = () => {
     { text: 'Find Loan', icon: <TravelExploreTwoToneIcon />, path: '/loan-application' },
     { text: 'Financial Tips', icon: <TipsAndUpdatesTwoToneIcon />, path: '/financial-tips' },
     { text: 'DashBoard', icon: <GridViewTwoToneIcon />, path: '/Dashboard' },
-    // { text: 'Signup', icon: <TipsIcon />, path: '/signup' },
-    // { text: 'Login', icon: <TipsIcon />, path: '/login' },
   ];
 
   const drawer = (
@@ -92,10 +89,34 @@ const Navbar = () => {
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
+
+        {/* Auth related options inside drawer */}
+        {!user ? (
+          <>
+            <ListItem button component={RouterLink} to="/login">
+              <ListItemIcon><LoginIcon /></ListItemIcon>
+              <ListItemText primary="Login" />
+            </ListItem>
+            <ListItem button component={RouterLink} to="/signup">
+              <ListItemIcon><SignupIcon /></ListItemIcon>
+              <ListItemText primary="Sign Up" />
+            </ListItem>
+          </>
+        ) : (
+          <>
+            <ListItem button component={RouterLink} to="/profile">
+              <ListItemIcon><AccountIcon /></ListItemIcon>
+              <ListItemText primary="Profile" />
+            </ListItem>
+            <ListItem button onClick={logout}>
+              <ListItemIcon><LogoutIcon /></ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItem>
+          </>
+        )}
       </List>
     </Box>
   );
-  
 
   return (
     <AppBar position="fixed">
@@ -103,7 +124,7 @@ const Navbar = () => {
         <Toolbar disableGutters>
           {isMobile && (
             <IconButton
-              color="inherit"
+              color="blue.200"
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
@@ -129,8 +150,10 @@ const Navbar = () => {
           >
             LOANMATE
           </Typography>
+
+          {/* Show menu buttons only on desktop */}
           {!isMobile && (
-            <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
+            <Box sx={{ flexGrow: 1, display: 'flex', gap: 5 , borderLeft: '1px solid rgba(6, 5, 5, 0.3)', paddingLeft: 3 }}>
               {menuItems.map((item) => (
                 <Button
                   key={item.text}
@@ -144,9 +167,33 @@ const Navbar = () => {
               ))}
             </Box>
           )}
+
           <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', gap: 2 }}>
             <LanguageSelector ref={languageSelectorRef} />
-            {user ? (
+
+            {/* Auth buttons only on desktop */}
+            {!isMobile && !user && (
+              <>
+                <Button
+                  color="inherit"
+                  component={RouterLink}
+                  to="/login"
+                  startIcon={<LoginIcon />}
+                >
+                  Login
+                </Button>
+                <Button
+                  color="inherit"
+                  component={RouterLink}
+                  to="/signup"
+                  startIcon={<SignupIcon />}
+                >
+                  Sign Up
+                </Button>
+              </>
+            )}
+
+            {!isMobile && user && (
               <>
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -171,7 +218,6 @@ const Navbar = () => {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  {/* Profile and Logout menu items */}
                   <MenuItem component={RouterLink} to="/profile" onClick={handleCloseUserMenu}>
                     <AccountIcon sx={{ mr: 1 }} />
                     <Typography textAlign="center">Profile</Typography>
@@ -182,40 +228,30 @@ const Navbar = () => {
                   </MenuItem>
                 </Menu>
               </>
-            ) : (
-              <>
-                <Button
-                  color="inherit"
-                  component={RouterLink}
-                  to="/login"
-                  startIcon={<LoginIcon />}
-                >
-                  Login
-                </Button>
-                <Button
-                  color="inherit"
-                  component={RouterLink}
-                  to="/signup"
-                  startIcon={<SignupIcon />}
-                >
-                  Sign Up
-                </Button>
-              </>
             )}
           </Box>
         </Toolbar>
       </Container>
+
+      {/* Drawer for mobile */}
       <Drawer
         variant="temporary"
         anchor="left"
         open={mobileOpen}
         onClose={handleDrawerToggle}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
+          keepMounted: true,
         }}
         sx={{
-          display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+           display: { xs: 'block', md: 'none' },
+  '& .MuiDrawer-paper': { 
+    boxSizing: 'border-box', 
+    width: 240,
+    color:'black',
+    borderRight: '5px solid #01060aff', // Blue border
+    borderRadius: '0 8px 8px 0',
+    background : '#e1e6ecff',
+  } ,
         }}
       >
         {drawer}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IndianRupee, ChevronDown, ChevronUp, CreditCard, Home, Car, GraduationCap, Building, DollarSign } from "lucide-react";
-
+import { ArrowBackIosNewSharp } from '@mui/icons-material';
 // Sample loan data with advanced details
 const loanData = [
   {
@@ -104,6 +104,8 @@ function Getknowloans() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+    <ArrowBackIosNewSharp className="w-6 h-6 text-gray-600 mb-4 mt-5 cursor-pointer" onClick={() => window.history.back()}/>
+    
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
